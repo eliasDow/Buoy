@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Buoy</string>
+    <string name="textView">Enter buoy code or description</string>
+    <string name="enter">Enter</string>
+    <string name="title_activity_get_data">getData</string>
+    <string name="title_activity_data">DataActivity</string>
+</resources>
