@@ -26,21 +26,25 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         //String name      =  txtname.getText().toString();
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_dropdown_item_1line, FULLARRAY);
 
-       SharedPreferences prefs = getSharedPreferences("Favorites",MODE_PRIVATE);
-        String first,second,third;
-        first = prefs.getString("first","0");
-        second = prefs.getString("second","0");
-        Log.d(first,first);
-        Log.d(second,second);
+        String[] fave = getFav();
 
-
+        ArrayAdapter favAdapt = new ArrayAdapter<>(this,R.layout.activity_main,fave);
 
         textView = (AutoCompleteTextView)
                 findViewById(R.id.autoText);
         textView.setAdapter(adapter);
+
+        ListView lv = (ListView)findViewById(R.id.list);
+        lv.setAdapter(favAdapt);
+        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+            }
+        });
 
     }
     /** Called when the user clicks the Enter button */
@@ -53,7 +57,13 @@ public class MainActivity extends AppCompatActivity {
         myIntent.putExtra(EXTRA_MESSAGE,buoyM);
         startActivity(myIntent);
 
-;    }
+    }
+
+    public String[] getFav(){
+        SharedPreferences prefs = getSharedPreferences("Favorites",MODE_PRIVATE);
+        String first,second,third;
+        return new String[]{prefs.getString("first",""),prefs.getString("second",""),prefs.getString("third","")};
+    }
 
     //array with just buoy code
     private static final String[] BUOYARRAY = new String[]{
