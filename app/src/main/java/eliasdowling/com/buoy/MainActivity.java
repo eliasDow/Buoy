@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
@@ -20,50 +21,72 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //String name      =  txtname.getText().toString();
+
+        //Adapter to hold dropdown list
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_dropdown_item_1line, FULLARRAY);
-
+        //main typable textview
         textView = (AutoCompleteTextView)
                 findViewById(R.id.autoText);
         textView.setAdapter(adapter);
 
-        //holds favorites in array
-        String[] fave = getFav();
+        //allows user to click on dropdown to take them directly to buoy page
+        textView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                sendBuoy(view);
+            }
+        });
 
-        //shows favorite 1 under text box
-        //favorites still overwriting
-        fav1 = (TextView) findViewById(R.id.fav1);
-        fav1.setText(fave[0]);
-        fav2 = (TextView) findViewById(R.id.fav2);
-        fav2.setText(fave[1]);
-        setclick(fav1,fave);
-        //fav3 = (TextView) findViewById(R.id.fav3);
-        
+        //sets favorites
+        getFav();
+        favView();
 
     }
+
+
+
     /** Called when the user clicks the Enter button */
     public void sendBuoy(View view) {
         // Do something in response to button
         final Intent myIntent = new Intent(this,DataActivity.class);
+        String buoyM= textView.getText().toString().substring(0,5);
 
-        //EditText editText = (EditText)findViewById(R.id.editText);
-
-        String buoyM = textView.getText().toString().substring(0,5);
         myIntent.putExtra(EXTRA_MESSAGE,buoyM);
         startActivity(myIntent);
     }
 
-    public void setclick(TextView t,String[] fave){
-        final String[] favPlac = fave;
+    public void setclick(TextView t,String fave){
+        final String favPlac = fave;
         t.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
                 Intent newIntent = new Intent(v.getContext(),DataActivity.class);
-                newIntent.putExtra(EXTRA_MESSAGE, favPlac[0]);
+                newIntent.putExtra(EXTRA_MESSAGE, favPlac);
                 startActivity(newIntent);
             }
         });
+    }
+
+    public void favView(){
+        //holds favorites in array
+        String[] fave = getFav();
+        //shows favorite 1 under text box
+        //favorites still overwriting
+        fav1 = (TextView) findViewById(R.id.fav1);
+        //should i check if null/DNE?
+        fav1.setText(fave[0]);
+        //sets on click listener
+        setclick(fav1,fave[0]);
+
+        //favorite #2 to be shown
+        fav2 = (TextView) findViewById(R.id.fav2);
+        fav2.setText(fave[1]);
+        setclick(fav2,fave[1]);
+
+        fav3 = (TextView) findViewById(R.id.fav3);
+        fav3.setText(fave[2]);
+        setclick(fav3,fave[2]);
     }
 
     public String[] getFav(){

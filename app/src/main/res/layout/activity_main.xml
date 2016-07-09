@@ -39,24 +39,36 @@
         android:layout_centerHorizontal="true" />
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:id="@+id/fav1"
         android:layout_below="@+id/button"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="49dp"
-        android:clickable="true"/>
+        android:clickable="true"
+        android:gravity="center"/>
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:id="@+id/fav2"
-        android:layout_below="@+id/button"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="49dp"
-        android:clickable="true"/>
+        android:layout_marginTop="28dp"
+        android:clickable="true"
+        android:layout_below="@+id/fav1"
+        android:layout_alignLeft="@+id/fav1"
+        android:layout_alignStart="@+id/fav1"
+        android:gravity="center"
+        android:text="etest"/>
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:id="@+id/fav3"
+        android:layout_marginTop="28dp"
+        android:layout_below="@+id/fav2"
+        android:gravity="center"/>
 
 
 
