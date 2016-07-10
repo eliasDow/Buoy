@@ -53,24 +53,33 @@ public class DataActivity extends AppCompatActivity {
                 SharedPreferences.Editor editor = prefs.edit();
                 Map<String,?> keys = prefs.getAll();
                 count = keys.size();
+
+                ////////for testing purposes/////
                 Log.d("SIZE","size: "+count);
-                //this needs overhaul
-                //keeps overwriting into third position
-                /*while(count<4){
-
-                }*/
-                if(count==0) {
-                    editor.putString("first", value);
-                }else if(count==1&&!keys.containsKey("second")){
-                    editor.putString("second",value);
-                }else if(count+1==2){
-                    editor.putString("third",value);
-                }else{
-                    Snackbar.make(view, "Maximum amount of favorites reached", Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show();
+                int show = 0;
+                for(Map.Entry<String,?> entry : keys.entrySet()){
+                    String key = entry.getKey();
+                    Object val = entry.getValue();
+                    Log.d(Integer.toString(show),key+val);
                 }
-                editor.apply();
+                ////////////////////////////////
 
+                //this needs overhaul
+                if(!keys.containsValue(value)){
+                    if(count==0||keys.get("zero")==null) {
+                        editor.putString("zero", value).commit();
+                    }else if(count==1||keys.get("one")==null){
+                        editor.putString("one",value).commit();
+                    }else if(count==2) {
+                        editor.putString("two", value).commit();
+                    }else if(count==3){
+                            editor.putString("three",value).commit();
+                    }else{
+                        Snackbar.make(view, "Maximum amount of favorites reached", Snackbar.LENGTH_LONG)
+                                .setAction("Action", null).show();
+                    }
+                }else Snackbar.make(view, "Already in favorites", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
             }
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -79,19 +88,27 @@ public class DataActivity extends AppCompatActivity {
         rem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Removed from favorites", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+
                 SharedPreferences prefs = getSharedPreferences("Favorites",MODE_PRIVATE);
                 SharedPreferences.Editor editor = prefs.edit();
                 Map<String,?> keys = prefs.getAll();
+                boolean found = false;
                 for(Map.Entry<String,?> entry : keys.entrySet()){
                     String key = entry.getKey();
                     Object val = entry.getValue();
                     if(val.equals(message)) {
-                        editor.remove(key);
-                        editor.apply();
+                        editor.remove(key).commit();
+                        Snackbar.make(view, "Removed from favorites", Snackbar.LENGTH_LONG)
+                                .setAction("Action", null).show();
+                        found = true;
+
                     }
                 }
+                if(!found){
+                    Snackbar.make(view, "This buoy is not in your favorites", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                }
+
             }
         });
 

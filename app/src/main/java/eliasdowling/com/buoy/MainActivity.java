@@ -4,11 +4,15 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
     public final static String EXTRA_MESSAGE = "com.eliasdowling.Buoy";
@@ -44,6 +48,13 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onResume(){
+        super.onResume();
+        getFav();
+        favView();
+        textView.clearListSelection();
+    }
 
 
     /** Called when the user clicks the Enter button */
@@ -72,27 +83,54 @@ public class MainActivity extends AppCompatActivity {
         //holds favorites in array
         String[] fave = getFav();
         //shows favorite 1 under text box
-        //favorites still overwriting
         fav1 = (TextView) findViewById(R.id.fav1);
         //should i check if null/DNE?
-        fav1.setText(fave[0]);
-        //sets on click listener
-        setclick(fav1,fave[0]);
+        if(fave.length>=1) {
+            fav1.setText(fave[0]);
+            //sets on click listener
+            setclick(fav1, fave[0]);
+        }
 
         //favorite #2 to be shown
-        fav2 = (TextView) findViewById(R.id.fav2);
-        fav2.setText(fave[1]);
-        setclick(fav2,fave[1]);
+        if(fave.length>=2) {
+            fav2 = (TextView) findViewById(R.id.fav2);
+            fav2.setText(fave[1]);
+            setclick(fav2, fave[1]);
+        }
+        if(fave.length>=3) {
+            fav3 = (TextView) findViewById(R.id.fav3);
+            fav3.setText(fave[2]);
+            setclick(fav3, fave[2]);
+        }
 
-        fav3 = (TextView) findViewById(R.id.fav3);
-        fav3.setText(fave[2]);
-        setclick(fav3,fave[2]);
+       /* LinearLayout linearLayout = new LinearLayout(this);
+        setContentView(linearLayout);
+        linearLayout.setOrientation(LinearLayout.VERTICAL);
+        if(fave.length>3){
+        TextView textView = new TextView(this);
+        textView.setText(fave[3]);
+        linearLayout.addView(textView);}*/
     }
 
     public String[] getFav(){
+        //to expand favorites into longer list:
+        //make for loop that iterates through prefs and adds all to array
         SharedPreferences prefs = getSharedPreferences("Favorites",MODE_PRIVATE);
-        String first,second,third;
-        return new String[]{prefs.getString("first",""),prefs.getString("second",""),prefs.getString("third","")};
+        Map<String,?> keys = prefs.getAll();
+        String[] favs = new String[keys.size()];
+        int count=0;
+        for(Map.Entry<String,?> entry : keys.entrySet()){
+            String key = entry.getKey();
+            Object val = entry.getValue();
+            favs[count] = (String)val;
+            count++;
+            Log.d("",key+val);
+        }
+        if(favs.length==0) {
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.clear().commit();
+        }
+        return favs;
     }
 
     //array with just buoy code
