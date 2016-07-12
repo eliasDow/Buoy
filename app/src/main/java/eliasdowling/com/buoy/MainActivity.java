@@ -3,6 +3,7 @@ package eliasdowling.com.buoy;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -10,8 +11,10 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.LinearLayout;
+import android.widget.MultiAutoCompleteTextView;
 import android.widget.TextView;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
@@ -20,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView fav1;
     private TextView fav2;
     private TextView fav3;
+    HashMap map;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,12 +31,12 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         //Adapter to hold dropdown list
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+        FilterWithSpaceAdapter<String> adapter = new FilterWithSpaceAdapter<>(this,
                 android.R.layout.simple_dropdown_item_1line, FULLARRAY);
         //main typable textview
-        textView = (AutoCompleteTextView)
-                findViewById(R.id.autoText);
+        textView = (AutoCompleteTextView) findViewById(R.id.autoText);
         textView.setAdapter(adapter);
+
 
         //allows user to click on dropdown to take them directly to buoy page
         textView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -42,9 +46,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        map = makeHash(FULLARRAY);
+
         //sets favorites
         getFav();
-        favView();
+        favView(map);
 
     }
 
@@ -52,19 +58,31 @@ public class MainActivity extends AppCompatActivity {
     public void onResume(){
         super.onResume();
         getFav();
-        favView();
-        textView.clearListSelection();
+        favView(map);
+        textView.setText("");
     }
 
+    public HashMap makeHash(String[] buoy){
+        HashMap<String,String> map = new HashMap<>();
+        for(int i=0;i<buoy.length;i++){
+            map.put(buoy[i].substring(0,5),buoy[i]);
+        }
+        return map;
+    }
 
     /** Called when the user clicks the Enter button */
     public void sendBuoy(View view) {
         // Do something in response to button
         final Intent myIntent = new Intent(this,DataActivity.class);
         String buoyM= textView.getText().toString().substring(0,5);
-
-        myIntent.putExtra(EXTRA_MESSAGE,buoyM);
-        startActivity(myIntent);
+        if(map.containsValue(buoyM)) {
+            myIntent.putExtra(EXTRA_MESSAGE, buoyM);
+            startActivity(myIntent);
+            onResume();
+        }else{
+            Snackbar.make(view, "Invalid buoy. Contact me if you want this buoy added!", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
+        }
     }
 
     public void setclick(TextView t,String fave){
@@ -79,14 +97,14 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void favView(){
+    public void favView(HashMap map){
         //holds favorites in array
         String[] fave = getFav();
         //shows favorite 1 under text box
         fav1 = (TextView) findViewById(R.id.fav1);
         //should i check if null/DNE?
         if(fave.length>=1) {
-            fav1.setText(fave[0]);
+            fav1.setText((String)map.get(fave[0]));
             //sets on click listener
             setclick(fav1, fave[0]);
         }
@@ -94,12 +112,12 @@ public class MainActivity extends AppCompatActivity {
         //favorite #2 to be shown
         if(fave.length>=2) {
             fav2 = (TextView) findViewById(R.id.fav2);
-            fav2.setText(fave[1]);
+            fav2.setText((String)map.get(fave[1]));
             setclick(fav2, fave[1]);
         }
         if(fave.length>=3) {
             fav3 = (TextView) findViewById(R.id.fav3);
-            fav3.setText(fave[2]);
+            fav3.setText((String)map.get(fave[2]));
             setclick(fav3, fave[2]);
         }
 

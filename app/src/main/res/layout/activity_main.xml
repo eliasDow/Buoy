@@ -27,7 +27,8 @@
         android:hint="@string/textView"
         android:id="@+id/autoText"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"/>
+        <!--android:drawableRight="@drawable/ic_clear_black_24dp"-->
     <Button
         style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"

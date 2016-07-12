@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.net.InterfaceAddress;
 import java.net.URL;
 import java.sql.Time;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -18,35 +20,7 @@ import java.util.TimeZone;
  */
 public class Data {
     private Date dateMain;
-   /* public static void main(String[] args){
-        Data first = new Data("NWPR1");
-        String[] data = first.retrieveCurrent();
-        //System.out.println(":"+data[1]);
-        printDate(data);
-    }*/
-
-
-    //remove static later
-    public String printDate(String[] data){
-        String dateStr = data[0]+"-"+data[1]+"-"+data[2]+" "+data[3]+":"+data[4];
-        System.out.println(dateStr);
-        try {
-            SimpleDateFormat sdf = new SimpleDateFormat("y-M-d h:mm");
-            sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
-            dateMain = sdf.parse(dateStr);
-        }catch(ParseException p){
-            p.printStackTrace();
-        }
-        //System.out.println(dateMain.toString());
-        SimpleDateFormat dateFormatter = new SimpleDateFormat("MM/dd/yyyy h:mm");
-        // Printing the date
-        System.out.println(dateFormatter.format(dateMain));
-        return dateFormatter.format(dateMain);
-    }
-    //0    1  2  3  4  5    6      7   8       8                    9       10                 11  12  13    14   15  16     17
-    //YY  MM DD hh mm WDIR WSPD *GST  WVHT   DPD(dominant period) APD(avg) MWD(mean wave dir) PRES ATMP WTMP DEWP  VIS PTDY  TIDE
     private String fileName;
-    //may want to change this
     private String date;
     private String windSpeed;
     private String windDir;
@@ -54,9 +28,41 @@ public class Data {
     private String domPeriod;
     private String avgPeriod;
     private String waveDir;
+    private String airTemp;
+    private String waterTemp;
+    private String pressure;
+    private String tide;
 
-    public Data() {
+    public String getAirTemp() {
+        return airTemp;
+    }
 
+    public void setAirTemp(String airTemp) {
+        this.airTemp = airTemp;
+    }
+
+    public String getWaterTemp() {
+        return waterTemp;
+    }
+
+    public void setWaterTemp(String waterTemp) {
+        this.waterTemp = waterTemp;
+    }
+
+    public String getPressure() {
+        return pressure;
+    }
+
+    public void setPressure(String pressure) {
+        this.pressure = pressure;
+    }
+
+    public String getTide() {
+        return tide;
+    }
+
+    public void setTide(String tide) {
+        this.tide = tide;
     }
 
     public Data(String file) {
@@ -127,56 +133,83 @@ public class Data {
         this.waveDir = waveDir;
     }
 
+    public Data() {
+
+    }
+    //remove static later
+    public String printDate(String[] data){
+        String dateStr = data[0]+"-"+data[1]+"-"+data[2]+" "+data[3]+":"+data[4];
+        //System.out.println(dateStr);
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("y-M-d h:mm");
+            sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+            dateMain = sdf.parse(dateStr);
+        }catch(ParseException p){
+            p.printStackTrace();
+        }
+        //System.out.println(dateMain.toString());
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("MM/dd/yyyy h:mm a");
+        // Printing the date
+        //System.out.println(dateFormatter.format(dateMain));
+        return dateFormatter.format(dateMain);
+    }
 
     public String[] retrieveCurrent() {
         //this will have to change in the future
         Scanner s = null;
         try {
             URL url = new URL("http://www.ndbc.noaa.gov/data/realtime2/" + this.fileName + ".txt");
-             s = new Scanner(url.openStream());
-
+            s = new Scanner(url.openStream());
         }catch(IOException e){
             e.printStackTrace();
         }
-        int lineNumber = 3;
-        //var reader = new StringReader(str);
 
-        String line;
+        String line="";
+        String nextLine;
+        String tenline="";
         int currentLineNumber = 0;
 
-        do
-        {
+        do{
             currentLineNumber += 1;
-            line = s.nextLine();
-        }
-        while (line != null && currentLineNumber < lineNumber);
+            if(currentLineNumber==3)
+                line = s.nextLine();
+            //
+            nextLine = s.nextLine();
+            if(currentLineNumber>3) tenline += tenline + s.nextLine();
+        } while (nextLine != null && currentLineNumber < 14);
 
-        String str =  (currentLineNumber == lineNumber) ? line :
-                "NA";
-        //System.out.println(str);
+
+        //String str =  (currentLineNumber == 14) ? line : "NA";
+
         //splits data from first line by space
-        String[] data = str.split(" ");
+        String[] data = line.split(" ");
         //removes all blank spaces
-        //data = data.Where(x => !string.IsNullOrEmpty(x)).ToArray();
+
         List<String> list = new ArrayList<String>(Arrays.asList(data));
         list.removeAll(Arrays.asList(""," "));
         data = new String[list.size()];
         data = list.toArray(data);
         return data;
-        //Array.ForEach(data, x => Console.WriteLine(x));
     }
-    //0    1  2  3  4  5    6      7   8       8                    9     10                    11  12  13    14   15  16     17
-    //YY  MM DD hh mm WDIR WSPD *GST  WVHT   DPD(dominant period) APD(avg) MWD(mean wave dir) PRES ATMP WTMP DEWP  VIS PTDY  TIDE
+
+    public void retrieve10(){
+
+    }
+
     public Data setAll(String[] data){
         this.date = printDate(data);
+        NumberFormat formatter = new DecimalFormat("#0.00");
+
+        //pres = 12 air = 13 water = 14 tide = 18
+
         if(!data[5].equals("MM")) {
             this.windDir = degreeToDir(data[5]);
         }
         if(!data[6].equals("MM")) {
-            this.windSpeed = String.valueOf(Double.parseDouble(data[6])*2.23);
+            this.windSpeed = String.valueOf(formatter.format(Double.parseDouble(data[6])*2.23));
         }
         if(!data[8].equals("MM")) {
-            this.waveHgt = String.valueOf(Double.parseDouble(data[8])*2.23);
+            this.waveHgt = String.valueOf(formatter.format(Double.parseDouble(data[8])*2.23));
         }
         if(!data[9].equals("MM")) {
             this.domPeriod = data[9];
@@ -186,6 +219,19 @@ public class Data {
         }
         if(!data[11].equals("MM")) {
             this.waveDir = degreeToDir(data[11]);
+        }
+        if(!data[12].equals("MM")) {
+            this.pressure = data[12];
+        }
+        //Multiply by 9, then divide by 5, then add 32
+        if(!data[13].equals("MM")) {
+            this.airTemp = String.valueOf(formatter.format((Double.parseDouble(data[13])*9)/5+32));
+        }
+        if(!data[14].equals("MM")) {
+            this.waterTemp = String.valueOf(formatter.format((Double.parseDouble(data[14])*9)/5+32));
+        }
+        if(!data[18].equals("MM")) {
+            this.tide = degreeToDir(data[11]);
         }
         return this;
     }
@@ -206,6 +252,14 @@ public class Data {
             out += "Wind speed: "+this.windSpeed+" MPH\n";
         }if(this.windDir!=null){
             out += "Wind direction: "+this.windDir+"\n";
+        }if(this.pressure!=null){
+            out += "Pressure: "+this.pressure+" hPa\n";
+        }if(this.airTemp!=null){
+            out += "Air temperature: "+this.airTemp+" F\n";
+        }if(this.waterTemp!=null){
+            out += "Water temperature: "+this.waterTemp+" F\n";
+        }if(this.tide!=null){
+            out += "Tide: "+this.tide+" ft\n";
         }
         return "Date: " + this.date +"\n"+ out;
     }
@@ -246,6 +300,6 @@ public class Data {
         }else{
             dir = "NNW";
         }
-        return dir;
+        return dir+"("+degree+")";
     }
 }
