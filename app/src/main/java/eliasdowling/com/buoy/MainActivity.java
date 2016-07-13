@@ -7,15 +7,21 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.OvershootInterpolator;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
+import android.widget.ExpandableListView;
 import android.widget.LinearLayout;
-import android.widget.MultiAutoCompleteTextView;
 import android.widget.TextView;
 
+
+import com.github.aakira.expandablelayout.ExpandableRelativeLayout;
+import com.github.aakira.expandablelayout.*;
 import java.util.HashMap;
 import java.util.Map;
+
 
 public class MainActivity extends AppCompatActivity {
     public final static String EXTRA_MESSAGE = "com.eliasdowling.Buoy";
@@ -23,12 +29,17 @@ public class MainActivity extends AppCompatActivity {
     private TextView fav1;
     private TextView fav2;
     private TextView fav3;
+    private TextView favtest;
     HashMap map;
+
+    ExpandableRelativeLayout expandableLayout1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
 
         //Adapter to hold dropdown list
         FilterWithSpaceAdapter<String> adapter = new FilterWithSpaceAdapter<>(this,
@@ -46,19 +57,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        map = makeHash(FULLARRAY);
-
-        //sets favorites
-        getFav();
-        favView(map);
-
     }
 
     @Override
     public void onResume(){
         super.onResume();
         getFav();
-        favView(map);
+        //favView(map);
         textView.setText("");
     }
 
@@ -75,12 +80,12 @@ public class MainActivity extends AppCompatActivity {
         // Do something in response to button
         final Intent myIntent = new Intent(this,DataActivity.class);
         String buoyM= textView.getText().toString().substring(0,5);
-        if(map.containsValue(buoyM)) {
+        if(map.containsKey(buoyM)) {
             myIntent.putExtra(EXTRA_MESSAGE, buoyM);
             startActivity(myIntent);
             onResume();
         }else{
-            Snackbar.make(view, "Invalid buoy. Contact me if you want this buoy added!", Snackbar.LENGTH_LONG)
+            Snackbar.make(view, buoyM+"Invalid buoy. Contact me if you want this buoy added!", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
         }
     }
@@ -109,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
             setclick(fav1, fave[0]);
         }
 
-        //favorite #2 to be shown
+        ///favorite #2 to be shown
         if(fave.length>=2) {
             fav2 = (TextView) findViewById(R.id.fav2);
             fav2.setText((String)map.get(fave[1]));
@@ -120,16 +125,16 @@ public class MainActivity extends AppCompatActivity {
             fav3.setText((String)map.get(fave[2]));
             setclick(fav3, fave[2]);
         }
-
-       /* LinearLayout linearLayout = new LinearLayout(this);
+/*
+        LinearLayout linearLayout = new LinearLayout(this);
         setContentView(linearLayout);
         linearLayout.setOrientation(LinearLayout.VERTICAL);
         if(fave.length>3){
-        TextView textView = new TextView(this);
-        textView.setText(fave[3]);
-        linearLayout.addView(textView);}*/
+            TextView textView = new TextView(this);
+            textView.setText(fave[3]);
+            linearLayout.addView(textView);
+        }*/
     }
-
     public String[] getFav(){
         //to expand favorites into longer list:
         //make for loop that iterates through prefs and adds all to array
@@ -149,6 +154,18 @@ public class MainActivity extends AppCompatActivity {
             editor.clear().commit();
         }
         return favs;
+    }
+
+    public void expandableButton1(View view) {
+        ExpandableRelativeLayout expandableLayout
+                = (ExpandableRelativeLayout) findViewById(R.id.expandableLayout1);
+        map = makeHash(FULLARRAY);
+        //sets favorites
+        getFav();
+        favView(map);
+        //expandableLayout.initLayout(true);
+        expandableLayout.toggle(); // toggle expand and collapse
+
     }
 
     //array with just buoy code

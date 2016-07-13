@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingBottom="@dimen/activity_vertical_margin"
@@ -39,36 +40,81 @@
         android:layout_below="@+id/autoText"
         android:layout_centerHorizontal="true" />
 
-    <TextView
-        android:layout_width="match_parent"
+    <Button
+        android:id="@+id/expandableButton1"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:id="@+id/fav1"
         android:layout_below="@+id/button"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="49dp"
-        android:clickable="true"
-        android:gravity="center"/>
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:id="@+id/fav2"
-        android:layout_marginTop="28dp"
-        android:clickable="true"
-        android:layout_below="@+id/fav1"
-        android:layout_alignLeft="@+id/fav1"
-        android:layout_alignStart="@+id/fav1"
-        android:gravity="center" />
+        android:background="#808080"
+        android:drawableRight="@android:drawable/arrow_down_float"
+        android:onClick="expandableButton1"
 
-    <TextView
+        android:text="Favorites"
+        android:gravity="center"
+        android:textColor="#000000" />
+    <!--android:paddingRight="10dp"-->
+
+    <com.github.aakira.expandablelayout.ExpandableRelativeLayout
+        android:id="@+id/expandableLayout1"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:id="@+id/fav3"
-        android:layout_marginTop="28dp"
-        android:layout_below="@+id/fav2"
-        android:gravity="center"/>
+        android:layout_height="match_parent"
+        android:layout_below="@+id/expandableButton1"
+        android:background="#90ba1f04"
+        android:padding="16dp"
+        app:ael_duration="400"
+        app:ael_expanded="false"
+        app:ael_interpolator="bounce"
+        app:ael_orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/fav1"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/fav1"
+            android:id="@+id/fav2"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/fav2"
+            android:id="@+id/fav3"/>
+    </com.github.aakira.expandablelayout.ExpandableRelativeLayout>
+
+
+    <!--
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:id="@+id/favTest"
+            android:layout_below="@+id/expandableLayout1"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="49dp"
+            android:clickable="true"
+            android:gravity="center"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:id="@+id/fav2"
+            android:layout_marginTop="28dp"
+            android:clickable="true"
+            android:layout_below="@+id/fav1"
+            android:layout_alignLeft="@+id/fav1"
+            android:layout_alignStart="@+id/fav1"
+            android:gravity="center" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:id="@+id/fav3"
+            android:layout_marginTop="28dp"
+            android:layout_below="@+id/fav2"
+            android:gravity="center"/>-->
 
 
 
