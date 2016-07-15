@@ -209,7 +209,7 @@ public class Data {
             this.windSpeed = String.valueOf(formatter.format(Double.parseDouble(data[6])*2.23));
         }
         if(!data[8].equals("MM")) {
-            this.waveHgt = String.valueOf(formatter.format(Double.parseDouble(data[8])*2.23));
+            this.waveHgt = String.valueOf(formatter.format(Double.parseDouble(data[8])*3.28));
         }
         if(!data[9].equals("MM")) {
             this.domPeriod = data[9];

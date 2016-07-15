@@ -66,18 +66,7 @@ public class DataActivity extends AppCompatActivity {
 
                 //this needs overhaul
                 if(!keys.containsValue(value)){
-                    if(count==0||keys.get("zero")==null) {
-                        editor.putString("zero", value).commit();
-                    }else if(count==1||keys.get("one")==null){
-                        editor.putString("one",value).commit();
-                    }else if(count==2) {
-                        editor.putString("two", value).commit();
-                    }else if(count==3){
-                            editor.putString("three",value).commit();
-                    }else{
-                        Snackbar.make(view, "Maximum amount of favorites reached", Snackbar.LENGTH_LONG)
-                                .setAction("Action", null).show();
-                    }
+                    editor.putString(Integer.toString(count+1),value).commit();
                 }else Snackbar.make(view, "Already in favorites", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }

@@ -14,6 +14,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 
@@ -39,6 +40,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //for testing purposes only
+        /*SharedPreferences prefs = getSharedPreferences("Favorites",MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.clear().commit();*/
 
 
         //Adapter to hold dropdown list
@@ -57,13 +62,17 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        //sets favorites
+        map = makeHash(FULLARRAY);
+        getFav();
+        favView(map);
+
     }
 
     @Override
     public void onResume(){
         super.onResume();
-        getFav();
-        //favView(map);
+        favView(map);
         textView.setText("");
     }
 
@@ -91,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void setclick(TextView t,String fave){
-        final String favPlac = fave;
+        final String favPlac = fave.substring(0,5);
         t.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
@@ -105,35 +114,25 @@ public class MainActivity extends AppCompatActivity {
     public void favView(HashMap map){
         //holds favorites in array
         String[] fave = getFav();
-        //shows favorite 1 under text box
-        fav1 = (TextView) findViewById(R.id.fav1);
-        //should i check if null/DNE?
-        if(fave.length>=1) {
-            fav1.setText((String)map.get(fave[0]));
-            //sets on click listener
-            setclick(fav1, fave[0]);
-        }
+        RelativeLayout favs = (RelativeLayout)findViewById(R.id.expandableLayout1);
+        favs.removeAllViews();
+        int prevTextViewId = 0;
+        for(int i=0;i<fave.length;i++){
+            final TextView tv = new TextView(this);
 
-        ///favorite #2 to be shown
-        if(fave.length>=2) {
-            fav2 = (TextView) findViewById(R.id.fav2);
-            fav2.setText((String)map.get(fave[1]));
-            setclick(fav2, fave[1]);
+            tv.setText((String)map.get(fave[i]));
+            setclick(tv,(String)map.get(fave[i]));
+            int curTextViewId = prevTextViewId + 1;
+            tv.setId(curTextViewId);
+            final RelativeLayout.LayoutParams params =
+                    new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT,
+                            RelativeLayout.LayoutParams.WRAP_CONTENT);
+
+            params.addRule(RelativeLayout.BELOW, prevTextViewId);
+            tv.setLayoutParams(params);
+            prevTextViewId = curTextViewId;
+            favs.addView(tv, params);
         }
-        if(fave.length>=3) {
-            fav3 = (TextView) findViewById(R.id.fav3);
-            fav3.setText((String)map.get(fave[2]));
-            setclick(fav3, fave[2]);
-        }
-/*
-        LinearLayout linearLayout = new LinearLayout(this);
-        setContentView(linearLayout);
-        linearLayout.setOrientation(LinearLayout.VERTICAL);
-        if(fave.length>3){
-            TextView textView = new TextView(this);
-            textView.setText(fave[3]);
-            linearLayout.addView(textView);
-        }*/
     }
     public String[] getFav(){
         //to expand favorites into longer list:
@@ -159,10 +158,6 @@ public class MainActivity extends AppCompatActivity {
     public void expandableButton1(View view) {
         ExpandableRelativeLayout expandableLayout
                 = (ExpandableRelativeLayout) findViewById(R.id.expandableLayout1);
-        map = makeHash(FULLARRAY);
-        //sets favorites
-        getFav();
-        favView(map);
         //expandableLayout.initLayout(true);
         expandableLayout.toggle(); // toggle expand and collapse
 
