@@ -8,3 +8,4 @@ A simple Android app that pulls data from the NDBC and displays it in a mobile f
 * Location services
 * Weather
 * UI overhaul
+* Widget support for favorites
