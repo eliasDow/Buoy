@@ -18,14 +18,7 @@ import android.widget.Toast;
 
 import com.github.aakira.expandablelayout.ExpandableRelativeLayout;
 import com.github.aakira.expandablelayout.*;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
+
 
 import java.util.HashMap;
 import java.util.Map;
@@ -131,6 +124,10 @@ public class MainActivity extends AppCompatActivity {
         String[] fave = getFav();
         RelativeLayout favs = (RelativeLayout)findViewById(R.id.expandableLayout1);
         //favs.removeAllViews();
+        ExpandableRelativeLayout expandableLayout
+                = (ExpandableRelativeLayout) findViewById(R.id.expandableLayout1);
+        //resets to avoid overwrite
+        expandableLayout.removeAllViews();
         int prevTextViewId = 0;
         for(int i=0;i<fave.length;i++){
             final TextView tv = new TextView(this);
@@ -175,7 +172,6 @@ public class MainActivity extends AppCompatActivity {
                 = (ExpandableRelativeLayout) findViewById(R.id.expandableLayout1);
         //expandableLayout.initLayout(true);
         expandableLayout.toggle(); // toggle expand and collapse
-
     }
 
     //array with just buoy code

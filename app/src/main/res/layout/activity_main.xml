@@ -64,7 +64,7 @@
         app:ael_interpolator="decelerate"
         app:ael_orientation="vertical">
 
-        <TextView
+        <!--<TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
@@ -83,7 +83,7 @@
             android:textSize="15sp"
 
             android:layout_below="@+id/fav2"
-            android:id="@+id/fav3"/>
+            android:id="@+id/fav3"/>-->
     </com.github.aakira.expandablelayout.ExpandableRelativeLayout>
 
 </RelativeLayout>
