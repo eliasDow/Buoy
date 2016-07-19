@@ -4,22 +4,29 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.view.animation.OvershootInterpolator;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.ExpandableListView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import com.github.aakira.expandablelayout.ExpandableRelativeLayout;
 import com.github.aakira.expandablelayout.*;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,6 +40,10 @@ public class MainActivity extends AppCompatActivity {
     private TextView favtest;
     HashMap map;
 
+
+
+
+
     ExpandableRelativeLayout expandableLayout1;
 
     @Override
@@ -44,7 +55,6 @@ public class MainActivity extends AppCompatActivity {
         /*SharedPreferences prefs = getSharedPreferences("Favorites",MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
         editor.clear().commit();*/
-
 
         //Adapter to hold dropdown list
         FilterWithSpaceAdapter<String> adapter = new FilterWithSpaceAdapter<>(this,
@@ -67,7 +77,10 @@ public class MainActivity extends AppCompatActivity {
         getFav();
         favView(map);
 
+
     }
+
+
 
     @Override
     public void onResume(){
@@ -88,22 +101,24 @@ public class MainActivity extends AppCompatActivity {
     public void sendBuoy(View view) {
         // Do something in response to button
         final Intent myIntent = new Intent(this,DataActivity.class);
-        String buoyM= textView.getText().toString().substring(0,5);
-        if(map.containsKey(buoyM)) {
-            myIntent.putExtra(EXTRA_MESSAGE, buoyM);
+
+        if(!textView.getText().toString().equals("")&&map.containsKey(textView.getText().toString().substring(0,5))){
+            myIntent.putExtra(EXTRA_MESSAGE, textView.getText().toString().substring(0,5));
             startActivity(myIntent);
             onResume();
         }else{
-            Snackbar.make(view, buoyM+"Invalid buoy. Contact me if you want this buoy added!", Snackbar.LENGTH_LONG)
+            Snackbar.make(view, textView.getText().toString().substring(0,5)+"Invalid buoy. Contact me if you want this buoy added!", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
         }
     }
 
     public void setclick(TextView t,String fave){
         final String favPlac = fave.substring(0,5);
+
         t.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
+                //frev.removeAllViews();
                 Intent newIntent = new Intent(v.getContext(),DataActivity.class);
                 newIntent.putExtra(EXTRA_MESSAGE, favPlac);
                 startActivity(newIntent);
@@ -115,13 +130,12 @@ public class MainActivity extends AppCompatActivity {
         //holds favorites in array
         String[] fave = getFav();
         RelativeLayout favs = (RelativeLayout)findViewById(R.id.expandableLayout1);
-        favs.removeAllViews();
+        //favs.removeAllViews();
         int prevTextViewId = 0;
         for(int i=0;i<fave.length;i++){
             final TextView tv = new TextView(this);
 
             tv.setText((String)map.get(fave[i]));
-            setclick(tv,(String)map.get(fave[i]));
             int curTextViewId = prevTextViewId + 1;
             tv.setId(curTextViewId);
             final RelativeLayout.LayoutParams params =
@@ -132,6 +146,7 @@ public class MainActivity extends AppCompatActivity {
             tv.setLayoutParams(params);
             prevTextViewId = curTextViewId;
             favs.addView(tv, params);
+            setclick(tv,(String)map.get(fave[i]));
         }
     }
     public String[] getFav(){

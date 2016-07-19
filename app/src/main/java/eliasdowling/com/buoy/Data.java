@@ -1,6 +1,8 @@
 package eliasdowling.com.buoy;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.net.InterfaceAddress;
 import java.net.URL;
 import java.sql.Time;
@@ -136,7 +138,8 @@ public class Data {
     public Data() {
 
     }
-    //remove static later
+
+
     public String printDate(String[] data){
         String dateStr = data[0]+"-"+data[1]+"-"+data[2]+" "+data[3]+":"+data[4];
         //System.out.println(dateStr);
@@ -155,7 +158,7 @@ public class Data {
     }
 
     public String[] retrieveCurrent() {
-        //this will have to change in the future
+        //can be refactored....
         Scanner s = null;
         try {
             URL url = new URL("http://www.ndbc.noaa.gov/data/realtime2/" + this.fileName + ".txt");
@@ -164,73 +167,91 @@ public class Data {
             e.printStackTrace();
         }
 
-        String line="";
-        String nextLine;
-        String tenline="";
+        String line;
         int currentLineNumber = 0;
 
         do{
             currentLineNumber += 1;
-            if(currentLineNumber==3)
-                line = s.nextLine();
-            //
-            nextLine = s.nextLine();
-            if(currentLineNumber>3) tenline += tenline + s.nextLine();
-        } while (nextLine != null && currentLineNumber < 14);
+            line = s.nextLine();
+        } while (line != null && currentLineNumber < 3);
+
+        return dataParse(line);
+    }
+
+    public ArrayList<Data> pastObs(){
+        Scanner s = null;
+        try {
+            URL url = new URL("http://www.ndbc.noaa.gov/data/realtime2/" + this.fileName + ".txt");
+            s = new Scanner(url.openStream());
+        }catch(IOException e){
+            e.printStackTrace();
+        }
+        String past="";
+        int currentLineNumber = 0;
+
+        ArrayList<String[]> txt = new ArrayList<>();
+        ArrayList<Data> datArr = new ArrayList<>();
+
+        do{
+            currentLineNumber += 1;
+            //absorbs irrelevant data
+            if(currentLineNumber<=3) s.nextLine();
+            else{
+                //txt.add(dataParse(s.nextLine()));
+                datArr.add(setAll(dataParse(s.nextLine()),true));
+            }
+        } while (currentLineNumber < 15);
+
+        //now we have arrayList of String arrays of past data
+        //method to take string array and return data object
+        return datArr;
+    }
 
 
-        //String str =  (currentLineNumber == 14) ? line : "NA";
-
-        //splits data from first line by space
-        String[] data = line.split(" ");
-        //removes all blank spaces
-
+    /**
+     * Parses out data from long string
+     * @param str string parsed from NDBC file 
+     * @return data array of data
+     */
+    public String[] dataParse(String str){
+        //removes spaces
+        String[] data = str.split(" ");
+        //array -> arraylist
         List<String> list = new ArrayList<String>(Arrays.asList(data));
+        //removes all spaces
         list.removeAll(Arrays.asList(""," "));
+        //back to array....
         data = new String[list.size()];
         data = list.toArray(data);
         return data;
     }
 
-    public void retrieve10(){
-
-    }
-
-    public Data setAll(String[] data){
-        this.date = printDate(data);
+    public Data setAll(String[] data,boolean past){
+        if(past) this.date = printDate(data).substring(12,printDate(data).length());
+        else this.date = printDate(data);
         NumberFormat formatter = new DecimalFormat("#0.00");
-
         //pres = 12 air = 13 water = 14 tide = 18
-
         if(!data[5].equals("MM")) {
             this.windDir = degreeToDir(data[5]);
-        }
-        if(!data[6].equals("MM")) {
+        }if(!data[6].equals("MM")) {
             this.windSpeed = String.valueOf(formatter.format(Double.parseDouble(data[6])*2.23));
-        }
-        if(!data[8].equals("MM")) {
+        }if(!data[8].equals("MM")) {
             this.waveHgt = String.valueOf(formatter.format(Double.parseDouble(data[8])*3.28));
-        }
-        if(!data[9].equals("MM")) {
+        }if(!data[9].equals("MM")) {
             this.domPeriod = data[9];
-        }
-        if(!data[10].equals("MM")) {
+        }if(!data[10].equals("MM")) {
             this.avgPeriod = data[10];
-        }
-        if(!data[11].equals("MM")) {
+        }if(!data[11].equals("MM")) {
             this.waveDir = degreeToDir(data[11]);
-        }
-        if(!data[12].equals("MM")) {
+        }if(!data[12].equals("MM")) {
             this.pressure = data[12];
         }
         //Multiply by 9, then divide by 5, then add 32
         if(!data[13].equals("MM")) {
             this.airTemp = String.valueOf(formatter.format((Double.parseDouble(data[13])*9)/5+32));
-        }
-        if(!data[14].equals("MM")) {
+        }if(!data[14].equals("MM")) {
             this.waterTemp = String.valueOf(formatter.format((Double.parseDouble(data[14])*9)/5+32));
-        }
-        if(!data[18].equals("MM")) {
+        }if(!data[18].equals("MM")) {
             this.tide = degreeToDir(data[11]);
         }
         return this;
@@ -240,11 +261,9 @@ public class Data {
         String out = "";
         if(this.waveHgt!=null){
             out += "Wave height: "+this.waveHgt+" feet\n";
-        }
-        if(this.waveDir!=null){
+        }if(this.waveDir!=null){
             out += "Wave direction: "+ this.waveDir+"\n";
-        }
-        if(this.domPeriod!=null){
+        }if(this.domPeriod!=null){
             out +="Dominant period: "+ this.domPeriod+" sec.\n";
         }if(this.avgPeriod!=null){
             out += "Average period: "+ this.avgPeriod+" sec.\n";
@@ -302,4 +321,8 @@ public class Data {
         }
         return dir+"("+degree+")";
     }
+
+
+    
+
 }

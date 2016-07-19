@@ -101,11 +101,14 @@ public class DataActivity extends AppCompatActivity {
             }
         });
 
-        Data output = null;
+        Data output[] = null;
+        //Data past = null;
 
         //Async: pass: filename,Void,Data
         try {
             output = new RetrieveData().execute(message).get();
+            //past = new RetrieveData().execute(message).get();
+
         }catch(java.lang.InterruptedException i){
             i.printStackTrace();
         }catch(ExecutionException e){
@@ -113,21 +116,27 @@ public class DataActivity extends AppCompatActivity {
         }
 
         textView.setTextSize(20);
-        textView.setText("\n\n\n"+output.toString());
+        textView.setText("\n\n\n"+output[0].toString());
         layout.addView(textView);
+
+
 
 
     }
 
 
-    class RetrieveData extends AsyncTask<String,Void,Data> {
+    class RetrieveData extends AsyncTask<String,Void,Data[]> {
 
         private Exception exception;
 
-        protected Data doInBackground(String... params) {
+        protected Data[] doInBackground(String... params) {
+            Data[] dArr = new Data[2];
             Data buoy = new Data(params[0]);
-            buoy.setAll(buoy.retrieveCurrent());
-            return buoy;
+            Data past = new Data(params[0]);
+            buoy.setAll(buoy.retrieveCurrent(),false);
+            dArr[0]=buoy;
+            dArr[1]=past;
+            return dArr;
         }
 
         protected void onPostExecute(Data data) {
