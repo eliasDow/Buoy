@@ -10,9 +10,10 @@ A simple Android app that pulls data from the NDBC and displays it in a mobile f
 * Weather
 * Widget support for favorites
 
+## License
 MIT License
 
-Copyright (c) [year] [fullname]
+Copyright (c) 2016 Elias Dowling-Huppert
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
