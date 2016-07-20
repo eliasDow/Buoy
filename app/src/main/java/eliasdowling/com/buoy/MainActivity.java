@@ -16,8 +16,10 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView fav2;
     private TextView fav3;
     private TextView favtest;
+    private ListView lister;
     HashMap map;
 
 
@@ -133,9 +136,41 @@ public class MainActivity extends AppCompatActivity {
         ExpandableRelativeLayout expandableLayout
                 = (ExpandableRelativeLayout) findViewById(R.id.expandableLayout1);
         //resets to avoid overwrite
-        expandableLayout.removeAllViews();
+        //expandableLayout.removeAllViews();
+
+
+        ArrayAdapter<String> itemsAdapter =
+                new ArrayAdapter<String>(this, R.layout.listthing,fave);
+
+        lister = (ListView)findViewById(R.id.listy);
+
+        lister.setAdapter(itemsAdapter);
+
+        /*list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
+
+                // ListView Clicked item index
+                int itemPosition     = position;
+
+                // ListView Clicked item value
+                String  itemValue    = (String) list.getItemAtPosition(position);
+
+                Intent newIntent = new Intent(view.getContext(),DataActivity.class);
+                newIntent.putExtra(EXTRA_MESSAGE, itemValue);
+                startActivity(newIntent);
+
+
+            }
+
+        });*/
+
+
+
         int prevTextViewId = 0;
-        for(int i=0;i<fave.length;i++){
+        /*for(int i=0;i<fave.length;i++){
             final TextView tv = new TextView(this);
 
             tv.setText((String)map.get(fave[i]));
@@ -161,7 +196,7 @@ public class MainActivity extends AppCompatActivity {
             tv.setBackgroundResource(outValue.resourceId);
 
             setclick(tv,(String)map.get(fave[i]));
-        }
+        }*/
     }
     public String[] getFav(){
         //to expand favorites into longer list:
@@ -173,9 +208,9 @@ public class MainActivity extends AppCompatActivity {
         for(Map.Entry<String,?> entry : keys.entrySet()){
             String key = entry.getKey();
             Object val = entry.getValue();
-            favs[count] = (String)val;
+            favs[count] = (String)map.get(val);
             count++;
-            Log.d("",key+val);
+            //Log.d("",key+val);
         }
         if(favs.length==0) {
             SharedPreferences.Editor editor = prefs.edit();

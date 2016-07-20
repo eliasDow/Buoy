@@ -67,26 +67,12 @@
         app:ael_interpolator="decelerate"
         app:ael_orientation="vertical">
 
-        <!--<TextView
+        <ListView
+            android:id="@+id/listy"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:textSize="25sp"
-            android:id="@+id/fav1"
-            />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="15sp"
-            android:layout_below="@+id/fav1"
-            android:id="@+id/fav2"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="15sp"
+           />
 
-            android:layout_below="@+id/fav2"
-            android:id="@+id/fav3"/>-->
     </com.github.aakira.expandablelayout.ExpandableRelativeLayout>
 
     <TextView
