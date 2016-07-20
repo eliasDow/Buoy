@@ -56,9 +56,12 @@
     <com.github.aakira.expandablelayout.ExpandableRelativeLayout
         android:id="@+id/expandableLayout1"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_below="@+id/expandableButton1"
         android:padding="16dp"
+        android:clickable="true"
+        android:listSelector="@drawable/ripple"
+        android:background="#F1F1F1"
         app:ael_duration="400"
         app:ael_expanded="false"
         app:ael_interpolator="decelerate"
@@ -85,5 +88,31 @@
             android:layout_below="@+id/fav2"
             android:id="@+id/fav3"/>-->
     </com.github.aakira.expandablelayout.ExpandableRelativeLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColorLink="@android:color/black"
+        android:text="@string/link"
+        android:id="@+id/textView"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:onClick="ndbc"
+        android:autoLink="web"
+        android:gravity="center"
+        android:padding="20px"
+        android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/selectableItemBackground"
+        android:text="Feel free to rate my app"
+        android:textColorLink="@android:color/white"
+        android:id="@+id/textView2"
+        android:layout_above="@+id/textView"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="20dp"
+        android:textSize="20dp" />
 
 </RelativeLayout>

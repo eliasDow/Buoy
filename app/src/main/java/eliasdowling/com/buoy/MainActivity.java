@@ -2,11 +2,18 @@ package eliasdowling.com.buoy;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.TypedArray;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
@@ -45,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         //for testing purposes only
-        /*SharedPreferences prefs = getSharedPreferences("Favorites",MODE_PRIVATE);
+       /* SharedPreferences prefs = getSharedPreferences("Favorites",MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
         editor.clear().commit();*/
 
@@ -96,18 +103,17 @@ public class MainActivity extends AppCompatActivity {
         final Intent myIntent = new Intent(this,DataActivity.class);
 
         if(!textView.getText().toString().equals("")&&map.containsKey(textView.getText().toString().substring(0,5))){
-            myIntent.putExtra(EXTRA_MESSAGE, textView.getText().toString().substring(0,5));
+            myIntent.putExtra(EXTRA_MESSAGE, textView.getText().toString());
             startActivity(myIntent);
             onResume();
         }else{
-            Snackbar.make(view, textView.getText().toString().substring(0,5)+"Invalid buoy. Contact me if you want this buoy added!", Snackbar.LENGTH_LONG)
+            Snackbar.make(view, textView.getText().toString()+"Invalid buoy. Contact me if you want this buoy added!", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
         }
     }
 
     public void setclick(TextView t,String fave){
-        final String favPlac = fave.substring(0,5);
-
+        final String favPlac = fave;
         t.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
@@ -140,9 +146,20 @@ public class MainActivity extends AppCompatActivity {
                             RelativeLayout.LayoutParams.WRAP_CONTENT);
 
             params.addRule(RelativeLayout.BELOW, prevTextViewId);
+            params.setMargins(0,20,0,0);
             tv.setLayoutParams(params);
+            tv.setTextSize(20);
             prevTextViewId = curTextViewId;
             favs.addView(tv, params);
+            tv.setClickable(true);
+            tv.setFocusable(true);
+
+            TypedValue outValue = new TypedValue();
+            getApplicationContext().getTheme().resolveAttribute(
+                    android.R.attr.selectableItemBackground, outValue, true);
+
+            tv.setBackgroundResource(outValue.resourceId);
+
             setclick(tv,(String)map.get(fave[i]));
         }
     }
@@ -174,6 +191,11 @@ public class MainActivity extends AppCompatActivity {
         expandableLayout.toggle(); // toggle expand and collapse
     }
 
+
+    public void ndbc(View v){
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.ndbc.noaa.gov/"));
+        startActivity(browserIntent);
+    }
     //array with just buoy code
     private static final String[] BUOYARRAY = new String[]{
         "32ST0","41NT0","41S43","41S46","42OTP","42S39","42S58","42S60","42T58","51WH0","13002","13008","13009","13010","15002","15006","15007","21346","21347","21348","21401","21402","21413","21414","21415","21416","21417","21418","21419","21597","21598","22101","22102","22103","22104","22105","22106","22107","22108","23219","23220","23223","23226","23227","23228","23401","31001","31002","31003","31004","31005","31006","31051","31053","32012","32066","32067","32401","32402","32403","32411","32412","32413","32489","34420","41001","41002","41004","41008","41009","41010","41013","41024","41025","41026","41029","41033","41037","41038","41040","41041","41043","41044","41046","41047","41048","41049","41051","41052","41053","41056","41060","41064","41098","41108","41110","41112","41113","41114","41115","41139","41159","41420","41421","41424","42001","42002","42003","42012","42013","42019","42020","42022","42023","42035","42036","42039","42040","42044","42045","42046","42047","42048","42049","42050","42051","42055","42056","42057","42058","42059","42060","42067","42085","42087","42088","42098","42099","42360","42361","42362","42363","42365","42368","42369","42370","42372","42373","42374","42375","42377","42379","42382","42383","42385","42388","42390","42392","42394","42395","42397","42399","42407","42408","42409","42851","42854","42857","42860","42864","42865","42874","42878","42880","42883","42884","42887","42891","42893","42895","42896","42898","42901","42902","42907","42912","42916","42917","42919","42924","42927","42928","42929","42931","42932","42934","42935","42936","42937","42939","42940","43412","43413","44005","44007","44008","44009","44011","44013","44014","44017","44018","44020","44024","44025","44027","44029","44030","44032","44033","44034","44037","44039","44041","44042","44043","44056","44057","44058","44059","44060","44061","44062","44063","44064","44065","44066","44069","44090","44091","44093","44095","44096","44097","44098","44099","44100","44137","44139","44141","44150","44251","44255","44258","44401","44402","45001","45002","45003","45004","45005","45006","45007","45008","45012","45013","45014","45022","45023","45024","45025","45026","45027","45028","45029","45132","45135","45136","45137","45138","45139","45140","45142","45143","45145","45147","45148","45149","45152","45154","45159","45161","45162","45163","45164","45165","45167","45168","45169","45170","45171","45174","45175","45176","46001","46002","46004","46005","46011","46012","46013","46014","46015","46022","46025","46026","46027","46028","46029","46035","46036","46041","46042","46047","46050","46053","46054","46059","46061","46066","46069","46070","46071","46072","46076","46080","46081","46083","46084","46085","46086","46087","46088","46089","46092","46096","46108","46114","46118","46119","46120","46121","46122","46123","46124","46125","46131","46132","46134","46145","46146","46147","46181","46183","46184","46185","46204","46205","46206","46207","46208","46211","46213","46214","46215","46216","46217","46218","46219","46221","46222","46224","46225","46229","46232","46236","46237","46239","46240","46242","46243","46244","46246","46248","46251","46253","46254","46255","46256","46257","46258","46259","46401","46402","46403","46404","46405","46406","46407","46408","46409","46410","46411","46412","46413","46419","46451","46452","46482","46499","51000","51001","51002","51003","51004","51101","51201","51202","51203","51204","51205","51206","51207","51209","51406","51407","51425","51426","52200","52201","52211","52212","52401","52402","52403","52404","52405","52406","52839","52840","52841","52843","52862","53046","53401","54401","55012","55013","55015","55016","55023","55042","55401","56001","56003","61001","62001","62027","62029","62030","62050","62081","62095","62102","62103","62104","62105","62107","62111","62112","62113","62114","62115","62116","62117","62118","62119","62120","62121","62122","62123","62124","62127","62128","62129","62130","62131","62132","62133","62134","62135","62136","62137","62138","62139","62140","62143","62144","62145","62146","62148","62149","62150","62151","62152","62153","62154","62155","62157","62160","62161","62162","62163","62164","62165","62166","62167","62168","62170","62296","62297","62302","62304","62305","63055","63056","63057","63058","63059","63101","63102","63103","63104","63105","63106","63107","63108","63109","63110","63111","63112","63113","63115","63117","63118","63120","64041","64045","64046","AAMC1","ACFS1","ACQS1","ACXS1","ACYN4","ADKA2","AGCM4","AGMW3","ALIA2","ALXN6","AMAA2","AMRL1","ANMN6","ANRN6","ANTA2","ANVC1","APAM2","APCF1","APNM4","APQF1","APRP7","APXF1","AROP4","ARPF1","ASTO3","ATGM1","ATKA2","AUGA2","AWRT2","BABT2","BARA9","BATN6","BDRN4","BDSP1","BDVF1","BDXC1","BEPB6","BFTN7","BGCF1","BGNN4","BGXN3","BHBM3","BHRI3","BIGM4","BISM2","BKBF1","BKTL1","BKYF1","BLIA2","BLIF1","BLTM2","BLTM3","BNKF1","BOBF1","BRHC3","BRIM2","BRND1","BSBM4","BSCA1","BSKF1","BSLM2","BUFN6","BURL1","BUZM3","BVQW1","BWSF1","BYGL1","BZBM3","CAMM2","CANF1","CAPL1","CARL1","CASM1","CBBV2","CBLO1","CBRW3","CDEA2","CDRF1","CECC1","CFWM1","CHAO3","CHAV3","CHCM2","CHII2","CHLV2","CHQO3","CHSV3","CHTS1","CHYV2","CHYW1","CLBP4","CLKN7","CLSM4","CMAN4","CMTI2","CNBF1","CNDO1","CNII2","COVM2","CPMW1","CPNT2","CPTR1","CPVM2","CPXC1","CQUC1","CRTA1","CRVA2","CSPA2","CWAF1","CWBF1","CWCI.","CWQO3","DARTH","DARTI","DARTL","DARTM","DARTN","DARTO","DARTP","DARTQ","DBLN6","DBQS1","DELD1","DESW1","DISW3","DKCM6","DKKF1","DMSF1","DOMV2","DPHA1","DPIA1","DPXC1","DRFA2","DRSD1","DTLM4","DUKN7","DULM5","EBSW1","EINL1","ELFA2","ELQC1","ELXC1","EPTT2","EREP1","EROA2","ESPP4","EVMC1","FAIO1","FBIS1","FCGT2","FFFC1","FFIA2","FHPF1","FILA2","FMOA1","FMRF1","FOXR1","FPKG1","FPTM4","FPXC1","FRDF1","FRDP4","FRDW1","FREL1","FRFN7","FRVM3","FRWL1","FRXM3","FSKM2","FSNM2","FSTI2","FTGM4","FTPC1","FWYF1","GBIF1","GBQN3","GBTF1","GCVF1","GDMM5","GDQM6","GDWV2","GDXM6","GELO1","GGGC1","GISL1","GKYF1","GNJT2","GRBL1","GRIM4","GSLM4","GTLM4","GTOT2","GTQF1","GTRM4","GTXF1","HBXC1","HBYC1","HCEF1","HCGN7","HIST2","HLNM4","HMRA2","HMSA2","HRBM4","HREF1","HRVC1","ICAC1","ICYA2","IIWC1","ILOH1","IMGP4","IOSN3","ITKA2","JAKI2","JCQN4","JCRN4","JCTN4","JKYF1","JMPN7","JNEA2","JOBP4","JOQP4","JOXP4","JXUF1","KATA1","KATP.","KBBF.","KBQX.","KCHA2","KCVW.","KDAA2","KDLP.","KECA2","KEHC.","KEIR.","KEMK.","KGBK.","KGCA2","KGHB.","KGNA.","KGRY.","KGUL.","KHHV.","KHQI.","KIKT.","KIPN.","KLIH1","KMDJ.","KMIS.","KMZG.","KNSW3","KP53.","KP58.","KP59.","KPTN6","KPTV2","KSCF.","KSPR.","KSQE.","KTNF1","KVAF.","KVBS.","KVKY.","KVOA.","KVQT.","KWHH1","KWJP8","KWNW3","KXIH.","KXPY.","KYWF1","LAMV3","LAPW1","LBRF1","LBSF1","LCLL1","LCNA2","LDLC3","LDTM4","LJAC1","LJPC1","LKWF1","LMBV4","LMDF1","LMFS1","LMRF1","LNDC1","LONF1","LOPL1","LOPW1","LPNM4","LRIF1","LRKF1","LSNF1","LTBV3","LTJF1","LTQM2","LTRM4","LUIT2","LWSD1","LWTV2","LYBT2","MACM4","MAQT2","MAXT2","MBLA1","MBRM4","MBXC1","MCGA1","MCGM4","MCYF1","MCYI3","MDRM1","MEEM4","MGIP4","MGPT2","MGZP4","MHPA1","MHRN6","MISM1","MISP4","MIST2","MKGM4","MLRF1","MLSC1","MLWW3","MNMM4","MNPV2","MOKH1","MQTT2","MRHO1","MRKA2","MRNA2","MROS1","MRSL1","MRYA2","MTBF1","MTKN6","MTYC1","MUKF1","MYPF1","MZXC1","NABM4","NAQR1","NAXR1","NBLP1","NCDV2","NCHT2","NEAW1","NFDF1","NIAN6","NIQS1","NIWS1","NKTA2","NLNC3","NMTA2","NOXN7","NPDW3","NPSF1","NRRF1","NSTP6","NTBC1","NTKM3","NUET2","NWCL1","NWHC3","NWPO3","NWPR1","NWWH1","OBGN6","OBLA1","OBXC1","OCIM2","OHBC1","OKSI2","OKXC1","OLCN6","OLSA2","OOUH1","OPTF1","ORIN7","OSGN6","OSTF1","OVIA2","OWQO1","OWXO1","PACF1","PACT2","PBFW1","PBLW1","PBPA2","PCBF1","PCGT2","PCLF1","PCLM4","PCNT2","PCOC1","PFXC1","PGBP7","PHBP1","PILA2","PILL1","PILM4","PKBW3","PKYF1","PLSF1","PLXA2","PMAF1","PMNT2","PMOA2","PNGW3","PNLM4","PNLM6","PORO3","PORT2","POTA2","PPTA1","PPTM2","PPXC1","PRDA2","PRJC1","PRTA2","PRUR1","PRYC1","PSBC1","PSBM1","PSCM4","PSLC1","PSTL1","PSTN6","PTAT2","PTAW1","PTBM6","PTCR1","PTIM4","PTIT2","PTLA2","PTOA1","PTRP4","PTWW1","PVGF1","PWAW3","PXOC1","PXSC1","QPTR1","RARM6","RCKM4","RCMC1","RCPT2","RCRN6","RCYF1","RDDA2","RDYD1","RF001","RKQF1","RKXF1","RLIT2","RLOT2","ROAM4","ROBN4","RPLV2","RPRN6","RSJT2","RTAT2","RTYC1","RYEC1","SACV4","SANF1","SAPF1","SAQG1","SAUF1","SAXG1","SBEO3","SBIO1","SBLM4","SBPT2","SCLD1","SCQC1","SCQN6","SDBC1","SDHN4","SDRT2","SEFO3","SEQA2","SETO3","SFXC1","SGNW3","SGOF1","SHBL1","SHPF1","SIPF1","SISA2","SISW1","SJNP4","SJOM4","SJSN4","SKTA2","SLIM2","SLOO3","SLVM5","SNDA2","SNDP5","SPGF1","SPLL1","SREF1","SRFW1","SRLM4","SRST2","SSBN7","STDM4","SVNM4","SWLA2","SWPM4","SWPV2","SXHW3","SYWW3","TAQT2","TBIM4","TBYF1","TCBM2","TCMW1","TCNW1","TCVF1","TDPC1","TESL1","TFBLK","THLO1","THRO1","TIBC1","TIQC1","TIXC1","TLBO3","TOKW1","TPEF1","TPLM2","TRDF1","TRRF1","TSHF1","TTIW1","TXPT2","ULAM6","UNLA2","UPBC1","VAKF1","VCAF1","VCAT2","VCVA2","VDZA2","VENF1","VERV4","VQSP4","WAHV2","WAKP8","WAQM3","WASD2","WATS1","WAXM3","WBYA1","WDEL1","WDSV2","WEBM1","WELM1","WEQM1","WEXM1","WHRI2","WIWF1","WKQA1","WKXA1","WLON7","WNEM4","WPLF1","WPOW1","WPTW1","WRBF1","WSLM4","WWEF1","WYCM6","YABP4","YATA2","YGNN6","YKRV2","YKTV2","YRSV2",

@@ -10,11 +10,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewParent;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+
 
 public class DataActivity extends AppCompatActivity {
     TextView text;
@@ -33,15 +35,12 @@ public class DataActivity extends AppCompatActivity {
         //this gets string from input and displays text entered
         Intent intent = getIntent();
         final String message = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
-        final String value = message;
-        TextView textView = new TextView(this);
-        TextView text = new TextView(this);
-        text.setTextSize(40);
-        text.setText(message);
+        //value to put into url
+        final String value = message.substring(0,5);
 
-        RelativeLayout layout = (RelativeLayout) findViewById(R.id.content);
-        layout.addView(text);
-
+        TextView text = (TextView)findViewById(R.id.name);
+        text.setText("\n\n"+message);
+        getSupportActionBar().setTitle(message);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -102,11 +101,12 @@ public class DataActivity extends AppCompatActivity {
         });
 
         Data output[] = null;
+
         //Data past = null;
 
         //Async: pass: filename,Void,Data
         try {
-            output = new RetrieveData().execute(message).get();
+            output = new RetrieveData().execute(value).get();
             //past = new RetrieveData().execute(message).get();
 
         }catch(java.lang.InterruptedException i){
@@ -114,11 +114,14 @@ public class DataActivity extends AppCompatActivity {
         }catch(ExecutionException e){
             e.printStackTrace();
         }
+        TextView textView = (TextView)findViewById(R.id.data);
 
         textView.setTextSize(20);
-        textView.setText("\n\n\n"+output[0].toString());
-        layout.addView(textView);
+        textView.setText("\n"+output[0].toString());
 
+
+
+        //layout.addView(textView);
 
 
 
