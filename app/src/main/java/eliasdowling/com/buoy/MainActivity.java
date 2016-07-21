@@ -2,31 +2,20 @@ package eliasdowling.com.buoy;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.TypedArray;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 
 import com.github.aakira.expandablelayout.ExpandableRelativeLayout;
-import com.github.aakira.expandablelayout.*;
 
 
 import java.util.HashMap;
@@ -36,17 +25,8 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity {
     public final static String EXTRA_MESSAGE = "com.eliasdowling.Buoy";
     AutoCompleteTextView textView;
-    private TextView fav1;
-    private TextView fav2;
-    private TextView fav3;
-    private TextView favtest;
     private ListView lister;
     HashMap map;
-
-
-
-
-
     ExpandableRelativeLayout expandableLayout1;
 
     @Override
@@ -79,8 +59,6 @@ public class MainActivity extends AppCompatActivity {
         map = makeHash(FULLARRAY);
         getFav();
         favView(map);
-
-
     }
 
 
@@ -135,18 +113,15 @@ public class MainActivity extends AppCompatActivity {
         //favs.removeAllViews();
         ExpandableRelativeLayout expandableLayout
                 = (ExpandableRelativeLayout) findViewById(R.id.expandableLayout1);
-        //resets to avoid overwrite
-        //expandableLayout.removeAllViews();
 
-
-        ArrayAdapter<String> itemsAdapter =
-                new ArrayAdapter<String>(this, R.layout.listthing,fave);
+        FilterWithSpaceAdapter<String> itemsAdapter =
+                new FilterWithSpaceAdapter<String>(this, R.layout.listthing,fave);
 
         lister = (ListView)findViewById(R.id.listy);
 
         lister.setAdapter(itemsAdapter);
 
-        /*list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        lister.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
@@ -156,48 +131,16 @@ public class MainActivity extends AppCompatActivity {
                 int itemPosition     = position;
 
                 // ListView Clicked item value
-                String  itemValue    = (String) list.getItemAtPosition(position);
+                String  itemValue    = (String) lister.getItemAtPosition(position);
 
                 Intent newIntent = new Intent(view.getContext(),DataActivity.class);
                 newIntent.putExtra(EXTRA_MESSAGE, itemValue);
                 startActivity(newIntent);
-
-
             }
 
-        });*/
-
-
-
-        int prevTextViewId = 0;
-        /*for(int i=0;i<fave.length;i++){
-            final TextView tv = new TextView(this);
-
-            tv.setText((String)map.get(fave[i]));
-            int curTextViewId = prevTextViewId + 1;
-            tv.setId(curTextViewId);
-            final RelativeLayout.LayoutParams params =
-                    new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT,
-                            RelativeLayout.LayoutParams.WRAP_CONTENT);
-
-            params.addRule(RelativeLayout.BELOW, prevTextViewId);
-            params.setMargins(0,20,0,0);
-            tv.setLayoutParams(params);
-            tv.setTextSize(20);
-            prevTextViewId = curTextViewId;
-            favs.addView(tv, params);
-            tv.setClickable(true);
-            tv.setFocusable(true);
-
-            TypedValue outValue = new TypedValue();
-            getApplicationContext().getTheme().resolveAttribute(
-                    android.R.attr.selectableItemBackground, outValue, true);
-
-            tv.setBackgroundResource(outValue.resourceId);
-
-            setclick(tv,(String)map.get(fave[i]));
-        }*/
+        });
     }
+
     public String[] getFav(){
         //to expand favorites into longer list:
         //make for loop that iterates through prefs and adds all to array
@@ -226,7 +169,10 @@ public class MainActivity extends AppCompatActivity {
         expandableLayout.toggle(); // toggle expand and collapse
     }
 
-
+    /**
+     * Link to ndbc site
+     * @param v
+     */
     public void ndbc(View v){
         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.ndbc.noaa.gov/"));
         startActivity(browserIntent);

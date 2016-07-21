@@ -81,12 +81,12 @@
         android:textColorLink="@android:color/black"
         android:text="@string/link"
         android:id="@+id/textView"
-        android:layout_alignParentBottom="true"
+        android:layout_below="@+id/textView2"
         android:layout_centerHorizontal="true"
         android:onClick="ndbc"
         android:autoLink="web"
         android:gravity="center"
-        android:padding="20px"
+        android:padding="20dp"
         android:textAppearance="?android:attr/textAppearanceSmall"/>
 
     <TextView
@@ -96,9 +96,9 @@
         android:text="Feel free to rate my app"
         android:textColorLink="@android:color/white"
         android:id="@+id/textView2"
-        android:layout_above="@+id/textView"
+        android:layout_below="@+id/expandableLayout1"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="20dp"
-        android:textSize="20dp" />
+        android:layout_marginTop="50dp"
+        android:textSize="20sp" />
 
 </RelativeLayout>
