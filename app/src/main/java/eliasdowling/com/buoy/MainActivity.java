@@ -7,16 +7,20 @@ import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
+import android.widget.Toast;
 
 import com.github.aakira.expandablelayout.ExpandableRelativeLayout;
-
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,14 +31,33 @@ public class MainActivity extends AppCompatActivity {
     AutoCompleteTextView textView;
     private ListView lister;
     HashMap map;
-    ExpandableRelativeLayout expandableLayout1;
+    private ListView mDrawerList;
+    private ArrayAdapter<String> mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //for testing purposes only
+        //navigation drawer stuff
+        mDrawerList = (ListView)findViewById(R.id.navList);
+        addDrawerItems();
+        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if(position==0){
+                    SharedPreferences prefs = getSharedPreferences("Favorites",MODE_PRIVATE);
+                    SharedPreferences.Editor editor = prefs.edit();
+                    editor.clear().commit();
+                }else if(position==1){
+                    ndbc(view);
+                }
+            }
+        });
+
+
+
+        //for testing purposes only we will use this in the sidebar
        /* SharedPreferences prefs = getSharedPreferences("Favorites",MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
         editor.clear().commit();*/
@@ -114,6 +137,9 @@ public class MainActivity extends AppCompatActivity {
         ExpandableRelativeLayout expandableLayout
                 = (ExpandableRelativeLayout) findViewById(R.id.expandableLayout1);
 
+        //final FilterWithSpaceAdapter adapter = new FilterWithSpaceAdapter(this, R.layout.list_item,fave);
+
+
         FilterWithSpaceAdapter<String> itemsAdapter =
                 new FilterWithSpaceAdapter<String>(this, R.layout.listthing,fave);
 
@@ -176,6 +202,12 @@ public class MainActivity extends AppCompatActivity {
     public void ndbc(View v){
         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.ndbc.noaa.gov/"));
         startActivity(browserIntent);
+    }
+
+    private void addDrawerItems() {
+        String[] osArray = { "Clear all favorites", "All data courtesy of the NDBC"};
+        mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, osArray);
+        mDrawerList.setAdapter(mAdapter);
     }
     //array with just buoy code
     private static final String[] BUOYARRAY = new String[]{
