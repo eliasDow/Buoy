@@ -55,8 +55,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
-
         //for testing purposes only we will use this in the sidebar
        /* SharedPreferences prefs = getSharedPreferences("Favorites",MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
@@ -74,6 +72,8 @@ public class MainActivity extends AppCompatActivity {
         textView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Snackbar.make(view, "Loading...", Snackbar.LENGTH_SHORT)
+                        .show();
                 sendBuoy(view);
             }
         });
@@ -83,7 +83,6 @@ public class MainActivity extends AppCompatActivity {
         getFav();
         favView(map);
     }
-
 
 
     @Override
@@ -106,27 +105,14 @@ public class MainActivity extends AppCompatActivity {
         // Do something in response to button
         final Intent myIntent = new Intent(this,DataActivity.class);
 
-        if(!textView.getText().toString().equals("")&&map.containsKey(textView.getText().toString().substring(0,5))){
-            myIntent.putExtra(EXTRA_MESSAGE, textView.getText().toString());
+        if(!textView.getText().toString().equals("")&&map.containsKey(textView.getText().toString().substring(0,5).toUpperCase())){
+            myIntent.putExtra(EXTRA_MESSAGE, textView.getText().toString().toUpperCase());
             startActivity(myIntent);
             onResume();
         }else{
             Snackbar.make(view, textView.getText().toString()+"Invalid buoy. Contact me if you want this buoy added!", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
         }
-    }
-
-    public void setclick(TextView t,String fave){
-        final String favPlac = fave;
-        t.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                //frev.removeAllViews();
-                Intent newIntent = new Intent(v.getContext(),DataActivity.class);
-                newIntent.putExtra(EXTRA_MESSAGE, favPlac);
-                startActivity(newIntent);
-            }
-        });
     }
 
     public void favView(HashMap map){
@@ -136,9 +122,6 @@ public class MainActivity extends AppCompatActivity {
         //favs.removeAllViews();
         ExpandableRelativeLayout expandableLayout
                 = (ExpandableRelativeLayout) findViewById(R.id.expandableLayout1);
-
-        //final FilterWithSpaceAdapter adapter = new FilterWithSpaceAdapter(this, R.layout.list_item,fave);
-
 
         FilterWithSpaceAdapter<String> itemsAdapter =
                 new FilterWithSpaceAdapter<String>(this, R.layout.listthing,fave);
@@ -152,7 +135,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-
+                Snackbar.make(view, "Loading...", Snackbar.LENGTH_SHORT)
+                        .show();
                 // ListView Clicked item index
                 int itemPosition     = position;
 

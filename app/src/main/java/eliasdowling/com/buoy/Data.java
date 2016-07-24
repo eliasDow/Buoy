@@ -278,7 +278,7 @@ public class Data {
         }if(this.waterTemp!=null){
             out += "Water temperature: "+this.waterTemp+" F\n";
         }if(this.tide!=null){
-            out += "Tide: "+this.tide+" ft\n";
+            out += "Tide: "+this.tide+" ft";
         }
         return "Date: " + this.date +"\n"+ out;
     }

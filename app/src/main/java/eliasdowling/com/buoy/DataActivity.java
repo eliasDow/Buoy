@@ -84,12 +84,12 @@ public class DataActivity extends AppCompatActivity {
                 for(Map.Entry<String,?> entry : keys.entrySet()){
                     String key = entry.getKey();
                     Object val = entry.getValue();
-                    if(val.equals(message)) {
+                    if(val.equals(message.substring(0,5))) {
                         editor.remove(key).commit();
                         Snackbar.make(view, "Removed from favorites", Snackbar.LENGTH_LONG)
                                 .setAction("Action", null).show();
                         found = true;
-
+                        break;
                     }
                 }
                 if(!found){
@@ -117,8 +117,9 @@ public class DataActivity extends AppCompatActivity {
         TextView textView = (TextView)findViewById(R.id.data);
 
         textView.setTextSize(20);
-        textView.setText("\n"+output[0].toString());
+        //textView.setElevation(13);
 
+        textView.setText(output[0].toString().substring(0,output[0].toString().lastIndexOf('\n')));
 
 
         //layout.addView(textView);
