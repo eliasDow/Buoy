@@ -67,10 +67,6 @@ public class Data {
         this.tide = tide;
     }
 
-    public Data(String file) {
-        this.fileName = file;
-    }
-
     public String getFileName() {
         return fileName;
     }
@@ -139,6 +135,12 @@ public class Data {
 
     }
 
+    public Data(String file) {
+        this.fileName = file;
+    }
+
+
+
 
     public String printDate(String[] data){
         String dateStr = data[0]+"-"+data[1]+"-"+data[2]+" "+data[3]+":"+data[4];
@@ -178,7 +180,7 @@ public class Data {
         return dataParse(line);
     }
 
-    public ArrayList<Data> pastObs(){
+    public Data[] pastObs(){
         Scanner s = null;
         try {
             URL url = new URL("http://www.ndbc.noaa.gov/data/realtime2/" + this.fileName + ".txt");
@@ -189,22 +191,33 @@ public class Data {
         String past="";
         int currentLineNumber = 0;
 
-        ArrayList<String[]> txt = new ArrayList<>();
         ArrayList<Data> datArr = new ArrayList<>();
-
+        int x=0;
+        Data[] test = new Data[20];
         do{
             currentLineNumber += 1;
             //absorbs irrelevant data
             if(currentLineNumber<=3) s.nextLine();
             else{
+
                 //txt.add(dataParse(s.nextLine()));
-                datArr.add(setAll(dataParse(s.nextLine()),true));
+                String[] go = dataParse(s.nextLine());
+                //System.out.print(go.toString());
+                Data d = setAll(go,true);
+               // System.out.print(d.toString());
+                datArr.add(d);
+                //this should print out unique data object
+                //System.out.println(datArr.get(x).toString());
+                test[x] = d;
+                //adds a Data object to arraylist from next line
+                //datArr.add(setAll(dataParse(s.nextLine()),true));
+                x++;
             }
         } while (currentLineNumber < 15);
 
         //now we have arrayList of String arrays of past data
         //method to take string array and return data object
-        return datArr;
+        return test;
     }
 
 
@@ -227,7 +240,7 @@ public class Data {
     }
 
     public Data setAll(String[] data,boolean past){
-        if(past) this.date = printDate(data).substring(12,printDate(data).length());
+        if(past) this.date = printDate(data);
         else this.date = printDate(data);
         NumberFormat formatter = new DecimalFormat("#0.00");
         //pres = 12 air = 13 water = 14 tide = 18
@@ -322,7 +335,5 @@ public class Data {
         return dir+"("+degree+")";
     }
 
-
-    
 
 }

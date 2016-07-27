@@ -12,8 +12,11 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewParent;
 import android.widget.RelativeLayout;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
@@ -101,25 +104,36 @@ public class DataActivity extends AppCompatActivity {
         });
 
         Data output[] = null;
-
-        //Data past = null;
+        Data[] past=null;
 
         //Async: pass: filename,Void,Data
         try {
             output = new RetrieveData().execute(value).get();
-            //past = new RetrieveData().execute(message).get();
-
+            past = new RetrievePast().execute(value).get();
         }catch(java.lang.InterruptedException i){
             i.printStackTrace();
         }catch(ExecutionException e){
             e.printStackTrace();
         }
+
+
+
         TextView textView = (TextView)findViewById(R.id.data);
 
         textView.setTextSize(20);
         //textView.setElevation(13);
 
         textView.setText(output[0].toString().substring(0,output[0].toString().lastIndexOf('\n')));
+
+        TextView wind = (TextView)findViewById(R.id.wind);
+        String windDat = "";
+        for(int i=0;i<past.length;i++){
+            if(past[i].getWindSpeed()!=null) {
+                windDat += past[i].getWindSpeed() + "\n";
+            }
+        }
+
+        wind.setText(windDat);
 
 
         //layout.addView(textView);
@@ -136,11 +150,26 @@ public class DataActivity extends AppCompatActivity {
         protected Data[] doInBackground(String... params) {
             Data[] dArr = new Data[2];
             Data buoy = new Data(params[0]);
-            Data past = new Data(params[0]);
             buoy.setAll(buoy.retrieveCurrent(),false);
             dArr[0]=buoy;
-            dArr[1]=past;
             return dArr;
+        }
+
+        protected void onPostExecute(Data data) {
+            //text.setTextSize(20);
+            //text.setText(data.toString());
+        }
+    }
+
+    class RetrievePast extends AsyncTask<String,Void,Data[]> {
+
+        private Exception exception;
+
+        protected Data[] doInBackground(String... params) {
+            Data[] dArr = new Data[2];
+            Data past = new Data(params[0]);
+
+            return past.pastObs();
         }
 
         protected void onPostExecute(Data data) {
