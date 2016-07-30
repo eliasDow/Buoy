@@ -8,12 +8,12 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewParent;
-import android.widget.RelativeLayout;
-import android.widget.TableLayout;
-import android.widget.TableRow;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -22,7 +22,7 @@ import java.util.concurrent.ExecutionException;
 
 
 public class DataActivity extends AppCompatActivity {
-    TextView text;
+    public TextView text;
 
     public static final String PREF_FAVORITE = "Favorites";
     public int count = 0;
@@ -68,7 +68,7 @@ public class DataActivity extends AppCompatActivity {
 
                 //this needs overhaul
                 if(!keys.containsValue(value)){
-                    editor.putString(Integer.toString(count+1),value).commit();
+                    editor.putString(Integer.toString(count+1),value).apply();
                 }else Snackbar.make(view, "Already in favorites", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
@@ -88,7 +88,7 @@ public class DataActivity extends AppCompatActivity {
                     String key = entry.getKey();
                     Object val = entry.getValue();
                     if(val.equals(message.substring(0,5))) {
-                        editor.remove(key).commit();
+                        editor.remove(key).apply();
                         Snackbar.make(view, "Removed from favorites", Snackbar.LENGTH_LONG)
                                 .setAction("Action", null).show();
                         found = true;
@@ -104,7 +104,7 @@ public class DataActivity extends AppCompatActivity {
         });
 
         Data output[] = null;
-        Data[] past=null;
+        ArrayList<Data> past=new ArrayList<>();
 
         //Async: pass: filename,Void,Data
         try {
@@ -125,23 +125,125 @@ public class DataActivity extends AppCompatActivity {
 
         textView.setText(output[0].toString().substring(0,output[0].toString().lastIndexOf('\n')));
 
-        TextView wind = (TextView)findViewById(R.id.wind);
+        /*TextView wind = (TextView)findViewById(R.id.wind);
         String windDat = "";
-        for(int i=0;i<past.length;i++){
-            if(past[i].getWindSpeed()!=null) {
-                windDat += past[i].getWindSpeed() + "\n";
-            }
-        }
+        for(int i=1;i<past.size();i++){
+            System.out.println("DataActivity:"+past.get(i).getWindSpeed());
+        }*/
 
-        wind.setText(windDat);
+        //wind.setText(windDat);
 
 
         //layout.addView(textView);
 
+        //to pick what past data you want to see
+        Spinner dropdown = (Spinner)findViewById(R.id.spinner);
+        String[] items = new String[]{"Click for past data","Wind","Wave","Tide","Pressure","Temperature"};
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, items);
+        dropdown.setAdapter(adapter);
+
+        pastDataSelector(dropdown,past);
 
 
     }
 
+    public void pastDataSelector(Spinner d,ArrayList<Data> da){
+        //wind wave tide pressure temp
+        final ArrayList<Data> hold = da;
+
+        d.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            String pastReturn="";
+
+
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                text = (TextView)findViewById(R.id.pastView);
+                text.setText("");
+                text.setMovementMethod(new ScrollingMovementMethod());
+                switch (position) {
+                    case 0:
+                        text.setText("");
+                        pastReturn="";
+                        break;
+                    case 1:
+                        // Wind
+                        text.setText("");
+                        pastReturn="";
+                        if(hold.get(0).getWindDir()!=null) {
+                            for (Data d : hold) {
+                                pastReturn += d.getDate().substring(10, d.getDate().length()) + " " + d.getWindSpeed() + " mph " + d.getWindDir() + "\n";
+                            }
+                            text.setText(pastReturn);
+                        }else text.setText("No wind data available");
+                        break;
+                    case 2:
+                        // Wave
+                        text.setText("");
+                        pastReturn="";
+                        if(hold.get(0).getWaveDir()!=null){
+                            for (Data d : hold) {
+                                pastReturn += d.getDate().substring(10, d.getDate().length()) + " " + d.getWaveHgt() + " ft " + d.getWaveDir() + "\n";
+                            }
+                            text.setText(pastReturn);
+                        }else text.setText("No wave data available");
+                        break;
+                    case 3:
+                        // tide
+                        text.setText("");
+                        pastReturn="";
+                        if(hold.get(0).getTide()!=null){
+                            for (Data d : hold) {
+                                pastReturn += d.getDate().substring(10, d.getDate().length()) + " " + d.getTide() + " ft\n";
+                            }
+                            text.setText(pastReturn);
+                        }else text.setText("No tide data available");
+                        break;
+                    case 4:
+                        //pressure
+                        text.setText("");
+                        pastReturn="";
+                        if(hold.get(0).getPressure()!=null){
+                            for (Data d : hold) {
+                                pastReturn += d.getDate().substring(10, d.getDate().length()) + " " + d.getPressure() + " hPa\n";
+                            }
+                            text.setText(pastReturn);
+                        }else text.setText("No pressure data available");
+                        break;
+                    case 5:
+                        //both water and air available
+                        text.setText("");
+                        pastReturn="";
+                        if(hold.get(0).getWaterTemp()!=null && hold.get(0).getAirTemp()!=null){
+                            for (Data d : hold) {
+                                pastReturn += d.getDate().substring(10, d.getDate().length()) + " Water: " + d.getWaterTemp() + " \u2109 Air: "+d.getAirTemp()+" ℉\n";
+                            }
+                            text.setText(pastReturn);
+                            //just water available
+                        }else if(hold.get(0).getWaterTemp()!=null && hold.get(0).getAirTemp()==null){
+                            for (Data d : hold) {
+                                pastReturn += d.getDate().substring(10, d.getDate().length()) + " Water: " + d.getWaterTemp() + " ℉\n";
+                            }
+                            text.setText(pastReturn);
+                            //just air available
+                        }else if(hold.get(0).getWaterTemp()==null && hold.get(0).getAirTemp()!=null){
+                            for (Data d : hold) {
+                                pastReturn += d.getDate().substring(10, d.getDate().length()) + " Air: " + d.getAirTemp() + " ℉\n";
+                            }
+                            text.setText(pastReturn);
+                        }else text.setText("No temperature data available");
+                        break;
+                }
+            }
+
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+
+    }
 
     class RetrieveData extends AsyncTask<String,Void,Data[]> {
 
@@ -161,14 +263,12 @@ public class DataActivity extends AppCompatActivity {
         }
     }
 
-    class RetrievePast extends AsyncTask<String,Void,Data[]> {
+    class RetrievePast extends AsyncTask<String,Void,ArrayList<Data>> {
 
         private Exception exception;
 
-        protected Data[] doInBackground(String... params) {
-            Data[] dArr = new Data[2];
-            Data past = new Data(params[0]);
-
+        protected ArrayList<Data> doInBackground(String... params) {
+            PastObs past = new PastObs(params[0]);
             return past.pastObs();
         }
 

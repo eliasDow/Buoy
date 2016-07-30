@@ -1,11 +1,7 @@
 package eliasdowling.com.buoy;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.net.InterfaceAddress;
 import java.net.URL;
-import java.sql.Time;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -136,10 +132,8 @@ public class Data {
     }
 
     public Data(String file) {
-        this.fileName = file;
+        this.fileName = file.toUpperCase();
     }
-
-
 
 
     public String printDate(String[] data){
@@ -180,46 +174,38 @@ public class Data {
         return dataParse(line);
     }
 
-    public Data[] pastObs(){
-        Scanner s = null;
-        try {
-            URL url = new URL("http://www.ndbc.noaa.gov/data/realtime2/" + this.fileName + ".txt");
-            s = new Scanner(url.openStream());
-        }catch(IOException e){
-            e.printStackTrace();
-        }
-        String past="";
-        int currentLineNumber = 0;
 
-        ArrayList<Data> datArr = new ArrayList<>();
-        int x=0;
-        Data[] test = new Data[20];
-        do{
-            currentLineNumber += 1;
-            //absorbs irrelevant data
-            if(currentLineNumber<=3) s.nextLine();
-            else{
-
-                //txt.add(dataParse(s.nextLine()));
-                String[] go = dataParse(s.nextLine());
-                //System.out.print(go.toString());
-                Data d = setAll(go,true);
-               // System.out.print(d.toString());
-                datArr.add(d);
-                //this should print out unique data object
-                //System.out.println(datArr.get(x).toString());
-                test[x] = d;
-                //adds a Data object to arraylist from next line
-                //datArr.add(setAll(dataParse(s.nextLine()),true));
-                x++;
-            }
-        } while (currentLineNumber < 15);
-
-        //now we have arrayList of String arrays of past data
-        //method to take string array and return data object
-        return test;
+    public Data(Date dateMain, String fileName, String date, String windSpeed, String windDir, String waveHgt, String domPeriod, String avgPeriod, String waveDir, String airTemp, String waterTemp, String pressure, String tide) {
+        this.dateMain = dateMain;
+        this.fileName = fileName;
+        this.date = date;
+        this.windSpeed = windSpeed;
+        this.windDir = windDir;
+        this.waveHgt = waveHgt;
+        this.domPeriod = domPeriod;
+        this.avgPeriod = avgPeriod;
+        this.waveDir = waveDir;
+        this.airTemp = airTemp;
+        this.waterTemp = waterTemp;
+        this.pressure = pressure;
+        this.tide = tide;
     }
 
+    public Data(Data d){
+        this.dateMain = d.dateMain;
+        this.fileName = d.fileName;
+        this.date = d.date;
+        this.windSpeed = d.windSpeed;
+        this.windDir = d.windDir;
+        this.waveHgt = d.waveHgt;
+        this.domPeriod = d.domPeriod;
+        this.avgPeriod = d.avgPeriod;
+        this.waveDir = d.waveDir;
+        this.airTemp = d.airTemp;
+        this.waterTemp = d.waterTemp;
+        this.pressure = d.pressure;
+        this.tide = d.tide;
+    }
 
     /**
      * Parses out data from long string
@@ -227,10 +213,11 @@ public class Data {
      * @return data array of data
      */
     public String[] dataParse(String str){
+
         //removes spaces
         String[] data = str.split(" ");
         //array -> arraylist
-        List<String> list = new ArrayList<String>(Arrays.asList(data));
+        List<String> list = new ArrayList<>(Arrays.asList(data));
         //removes all spaces
         list.removeAll(Arrays.asList(""," "));
         //back to array....
@@ -287,9 +274,9 @@ public class Data {
         }if(this.pressure!=null){
             out += "Pressure: "+this.pressure+" hPa\n";
         }if(this.airTemp!=null){
-            out += "Air temperature: "+this.airTemp+" F\n";
+            out += "Air temperature: "+this.airTemp+" \u2109\n";
         }if(this.waterTemp!=null){
-            out += "Water temperature: "+this.waterTemp+" F\n";
+            out += "Water temperature: "+this.waterTemp+" \u2109\n";
         }if(this.tide!=null){
             out += "Tide: "+this.tide+" ft";
         }
@@ -332,7 +319,7 @@ public class Data {
         }else{
             dir = "NNW";
         }
-        return dir+"("+degree+")";
+        return dir+"("+degree+"\u00B0)";
     }
 
 
