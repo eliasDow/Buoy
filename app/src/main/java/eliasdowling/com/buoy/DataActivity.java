@@ -9,7 +9,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.method.ScrollingMovementMethod;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -23,10 +22,7 @@ import java.util.concurrent.ExecutionException;
 
 public class DataActivity extends AppCompatActivity {
     public TextView text;
-
-    public static final String PREF_FAVORITE = "Favorites";
     public int count = 0;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,17 +52,6 @@ public class DataActivity extends AppCompatActivity {
                 Map<String,?> keys = prefs.getAll();
                 count = keys.size();
 
-                ////////for testing purposes/////
-                Log.d("SIZE","size: "+count);
-                int show = 0;
-                for(Map.Entry<String,?> entry : keys.entrySet()){
-                    String key = entry.getKey();
-                    Object val = entry.getValue();
-                    Log.d(Integer.toString(show),key+val);
-                }
-                ////////////////////////////////
-
-                //this needs overhaul
                 if(!keys.containsValue(value)){
                     editor.putString(Integer.toString(count+1),value).apply();
                 }else Snackbar.make(view, "Already in favorites", Snackbar.LENGTH_LONG)
@@ -116,8 +101,6 @@ public class DataActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-
-
         TextView textView = (TextView)findViewById(R.id.data);
 
         textView.setTextSize(20);
@@ -153,7 +136,6 @@ public class DataActivity extends AppCompatActivity {
 
         d.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             String pastReturn="";
-
 
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -235,19 +217,15 @@ public class DataActivity extends AppCompatActivity {
                 }
             }
 
-
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
 
             }
         });
 
-
     }
 
     class RetrieveData extends AsyncTask<String,Void,Data[]> {
-
-        private Exception exception;
 
         protected Data[] doInBackground(String... params) {
             Data[] dArr = new Data[2];
@@ -256,26 +234,13 @@ public class DataActivity extends AppCompatActivity {
             dArr[0]=buoy;
             return dArr;
         }
-
-        protected void onPostExecute(Data data) {
-            //text.setTextSize(20);
-            //text.setText(data.toString());
-        }
     }
 
     class RetrievePast extends AsyncTask<String,Void,ArrayList<Data>> {
-
-        private Exception exception;
 
         protected ArrayList<Data> doInBackground(String... params) {
             PastObs past = new PastObs(params[0]);
             return past.pastObs();
         }
-
-        protected void onPostExecute(Data data) {
-            //text.setTextSize(20);
-            //text.setText(data.toString());
-        }
     }
-
 }

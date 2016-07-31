@@ -58,11 +58,12 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/spinner"
             android:id="@+id/pastView"
+            android:layout_below="@+id/spinner"
             android:maxLines = "15"
             android:scrollbars = "vertical"
             android:paddingBottom="60dp"/>
+
 
     </RelativeLayout>
 

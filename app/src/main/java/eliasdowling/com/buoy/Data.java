@@ -174,23 +174,6 @@ public class Data {
         return dataParse(line);
     }
 
-
-    public Data(Date dateMain, String fileName, String date, String windSpeed, String windDir, String waveHgt, String domPeriod, String avgPeriod, String waveDir, String airTemp, String waterTemp, String pressure, String tide) {
-        this.dateMain = dateMain;
-        this.fileName = fileName;
-        this.date = date;
-        this.windSpeed = windSpeed;
-        this.windDir = windDir;
-        this.waveHgt = waveHgt;
-        this.domPeriod = domPeriod;
-        this.avgPeriod = avgPeriod;
-        this.waveDir = waveDir;
-        this.airTemp = airTemp;
-        this.waterTemp = waterTemp;
-        this.pressure = pressure;
-        this.tide = tide;
-    }
-
     public Data(Data d){
         this.dateMain = d.dateMain;
         this.fileName = d.fileName;

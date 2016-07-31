@@ -11,7 +11,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 
 import com.github.aakira.expandablelayout.ExpandableRelativeLayout;
 
@@ -48,11 +47,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        //for testing purposes only we will use this in the sidebar
-       /* SharedPreferences prefs = getSharedPreferences("Favorites",MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.clear().commit();*/
-
         //Adapter to hold dropdown list
         FilterWithSpaceAdapter<String> adapter = new FilterWithSpaceAdapter<>(this,
                 android.R.layout.simple_dropdown_item_1line, FULLARRAY);
@@ -84,12 +78,18 @@ public class MainActivity extends AppCompatActivity {
         textView.setText("");
     }
 
+
     public HashMap makeHash(String[] buoy){
         HashMap<String,String> map = new HashMap<>();
         for(int i=0;i<buoy.length;i++){
             map.put(buoy[i].substring(0,5),buoy[i]);
         }
         return map;
+    }
+
+    public void getMap(View view){
+        Intent intent = new Intent(this,MapsActivity.class);
+        startActivity(intent);
     }
 
     /** Called when the user clicks the Enter button */
