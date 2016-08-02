@@ -47,27 +47,36 @@
             android:layout_alignTop="@+id/autoText"
             android:layout_alignRight="@+id/autoText"
             android:layout_alignEnd="@+id/autoText"
-            android:layout_marginTop="5dp" />
+            android:layout_marginTop="5dp"
+            style="?android:attr/borderlessButtonStyle"/>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/cyan"
+            android:id="@+id/linlay"
+            android:layout_below="@+id/button"
+            android:layout_marginTop="10dp">
         <Button
             android:id="@+id/expandableButton1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/autoText"
             android:drawableRight="@drawable/chevrondown"
-            android:background="?android:selectableItemBackground"
+            android:drawableEnd="@drawable/chevrondown"
             android:onClick="expandableButton1"
             android:text="Favorites"
             android:textSize="16sp"
-            android:gravity="center_vertical|start"
-            android:paddingBottom="0dp"
-            android:paddingLeft="7dp"/>
+            android:textColor="@color/white"
+            android:gravity="center"
+            android:background="?android:selectableItemBackground"
+            android:paddingLeft="45dp"/>
+        </LinearLayout>
 
         <com.github.aakira.expandablelayout.ExpandableRelativeLayout
             android:id="@+id/expandableLayout1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/expandableButton1"
+            android:layout_below="@+id/linlay"
             android:paddingTop="0dp"
             android:clickable="true"
             android:listSelector="@drawable/ripple"
@@ -84,15 +93,27 @@
                 android:paddingTop="0dp" />
 
         </com.github.aakira.expandablelayout.ExpandableRelativeLayout>
-
-        <Button
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="New Button"
+            android:background="@color/cyan"
+            android:id="@+id/linlay2"
+            android:layout_below="@+id/expandableLayout1"
+            android:layout_marginTop="10dp">
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Map"
             android:id="@+id/button2"
-            android:layout_centerVertical="true"
-            android:layout_centerHorizontal="true"
-            android:onClick="getMap"/>
+            android:onClick="getMap"
+            android:textSize="16sp"
+            android:textColor="@color/white"
+            android:gravity="center"
+            android:drawableRight="@drawable/chevrondown"
+            android:drawableEnd="@drawable/chevrondown"
+            android:background="?android:selectableItemBackground"
+            android:paddingLeft="45dp"/>
+        </LinearLayout>
 
 
     </RelativeLayout>
