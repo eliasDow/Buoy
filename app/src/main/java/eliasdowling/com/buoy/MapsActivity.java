@@ -2,7 +2,9 @@ package eliasdowling.com.buoy;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -15,6 +17,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -64,15 +67,17 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
             public void onInfoWindowClick(Marker marker) {
-                Intent intent = new Intent(MapsActivity.this,DataActivity.class);
-                intent.putExtra("com.eliasdowling.Buoy", marker.getTitle());
-                startActivity(intent);
+                if (MainActivity.isNetworkAvailable(getApplicationContext())) {
+                    Intent intent = new Intent(MapsActivity.this, DataActivity.class);
+                    intent.putExtra("com.eliasdowling.Buoy", marker.getTitle());
+                    startActivity(intent);
+                }else Toast.makeText(getApplicationContext(),"Connect unavailable",Toast.LENGTH_LONG).show();
 
             }
         });
 
         LatLng sydney = new LatLng(33, -117);
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(sydney,7));
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(sydney,5));
 
 
 

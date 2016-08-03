@@ -1,11 +1,17 @@
 package eliasdowling.com.buoy;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -22,14 +28,72 @@ public class MainActivity extends AppCompatActivity {
     public final static String EXTRA_MESSAGE = "com.eliasdowling.Buoy";
     AutoCompleteTextView textView;
     private ListView lister;
-    HashMap map;
+    public static HashMap map;
+
     private ListView mDrawerList;
     private ArrayAdapter<String> mAdapter;
+    DrawerLayout mDrawerLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //creating navigation drawer
+        createNav();
+        //creating search textView
+        createAutoTextview();
+
+        //sets favorites
+        map = makeHash(FULLARRAY);
+        //creates favorites
+        getFav();
+        favView(map);
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        favView(map);
+        textView.setText("");
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                mDrawerLayout.openDrawer(GravityCompat.START);  // OPEN DRAWER
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    public void createAutoTextview(){
+        //Adapter to hold dropdown list
+        FilterWithSpaceAdapter<String> adapter = new FilterWithSpaceAdapter<>(this,
+                android.R.layout.simple_list_item_1, FULLARRAY);
+        //main typable textview
+        textView = (AutoCompleteTextView) findViewById(R.id.autoText);
+        textView.setAdapter(adapter);
+
+        //allows user to click on dropdown to take them directly to buoy page
+        textView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Snackbar.make(view, "Loading...", Snackbar.LENGTH_SHORT)
+                        .show();
+                sendBuoy(view);
+            }
+        });
+    }
+
+    public void createNav(){
+        final ActionBar ab = getSupportActionBar();
+        ab.setHomeAsUpIndicator(R.drawable.ic_menu);
+        ab.setDisplayHomeAsUpEnabled(true);
+
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 
         //navigation drawer stuff
         mDrawerList = (ListView)findViewById(R.id.navList);
@@ -46,38 +110,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-
-        //Adapter to hold dropdown list
-        FilterWithSpaceAdapter<String> adapter = new FilterWithSpaceAdapter<>(this,
-                android.R.layout.simple_dropdown_item_1line, FULLARRAY);
-        //main typable textview
-        textView = (AutoCompleteTextView) findViewById(R.id.autoText);
-        textView.setAdapter(adapter);
-
-
-        //allows user to click on dropdown to take them directly to buoy page
-        textView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Snackbar.make(view, "Loading...", Snackbar.LENGTH_SHORT)
-                        .show();
-                sendBuoy(view);
-            }
-        });
-
-        //sets favorites
-        map = makeHash(FULLARRAY);
-        getFav();
-        favView(map);
     }
-
-    @Override
-    public void onResume(){
-        super.onResume();
-        favView(map);
-        textView.setText("");
-    }
-
 
     public HashMap makeHash(String[] buoy){
         HashMap<String,String> map = new HashMap<>();
@@ -97,13 +130,16 @@ public class MainActivity extends AppCompatActivity {
         // Do something in response to button
         final Intent myIntent = new Intent(this,DataActivity.class);
 
-        if(!textView.getText().toString().matches("")&&map.containsKey(textView.getText().toString().substring(0,5).toUpperCase())){
+        if(!textView.getText().toString().matches("")&&map.containsKey(textView.getText().toString().substring(0,5).toUpperCase())&&isNetworkAvailable(getApplicationContext())){
             myIntent.putExtra(EXTRA_MESSAGE, textView.getText().toString());
             startActivity(myIntent);
             onResume();
-        }else{
+        }else if(isNetworkAvailable(getApplicationContext())){
             Snackbar.make(view, textView.getText().toString()+"Invalid buoy. Contact me if you want this buoy added!", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
+        }else{
+            Snackbar.make(view, "Connection unavailable", Snackbar.LENGTH_SHORT)
+                    .show();
         }
     }
 
@@ -130,10 +166,14 @@ public class MainActivity extends AppCompatActivity {
 
                 // ListView Clicked item value
                 String  itemValue    = (String) lister.getItemAtPosition(position);
-
-                Intent newIntent = new Intent(view.getContext(),DataActivity.class);
-                newIntent.putExtra(EXTRA_MESSAGE, itemValue);
-                startActivity(newIntent);
+                if(isNetworkAvailable(getApplicationContext())) {
+                    Intent newIntent = new Intent(view.getContext(), DataActivity.class);
+                    newIntent.putExtra(EXTRA_MESSAGE, itemValue);
+                    startActivity(newIntent);
+                }else{
+                    Snackbar.make(view, "Connection unavailable", Snackbar.LENGTH_SHORT)
+                            .show();
+                }
             }
         });
     }
@@ -176,9 +216,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void addDrawerItems() {
-        String[] osArray = { "Clear all favorites", "All data courtesy of the NDBC"};
+        String[] osArray = { "Clear all favorites", "All data from NDBC"};
         mAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, osArray);
         mDrawerList.setAdapter(mAdapter);
+    }
+
+    public static boolean isNetworkAvailable(final Context context) {
+        final ConnectivityManager connectivityManager = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE));
+        return connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected();
     }
 
     //array with all info

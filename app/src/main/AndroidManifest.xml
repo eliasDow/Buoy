@@ -4,6 +4,7 @@
     package="eliasdowling.com.buoy">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
@@ -29,7 +30,7 @@
             android:name=".DataActivity"
             android:label="@string/title_activity_data"
             android:parentActivityName=".MainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/Theme.AppCompat.Light">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="eliasdowling.com.buoy.MainActivity" />
@@ -55,5 +56,4 @@
                 android:value="eliasdowling.com.buoy.MainActivity" />
         </activity>
     </application>
-
 </manifest>

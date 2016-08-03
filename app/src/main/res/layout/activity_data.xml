@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     tools:context="eliasdowling.com.buoy.DataActivity">
-
+<!--
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -20,7 +20,7 @@
             android:background="?attr/colorPrimary"
             app:popupTheme="@style/AppTheme.PopupOverlay" />
 
-    </android.support.design.widget.AppBarLayout>
+    </android.support.design.widget.AppBarLayout>-->
 
     <include layout="@layout/content_data" />
     <RelativeLayout
@@ -36,6 +36,7 @@
             android:id="@+id/name"
             android:textStyle="bold"
             android:padding="5dp"
+            android:background="@drawable/shadow"
             />
         <TextView
             android:layout_width="fill_parent"

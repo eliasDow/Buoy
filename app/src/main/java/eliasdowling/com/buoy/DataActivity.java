@@ -16,6 +16,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
@@ -27,19 +28,23 @@ public class DataActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_data);
+        setContentView(R.layout.activity_data);/*
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        setSupportActionBar(toolbar);*/
 
         //this gets string from input and displays text entered
         Intent intent = getIntent();
         final String message = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
         //value to put into url
+        if(message.length()<6){
+            HashMap map = MainActivity.map;
+            String mapTitle = map.get(message).toString();
+            getSupportActionBar().setTitle(mapTitle);
+        }else         getSupportActionBar().setTitle(message);
         final String value = message.substring(0,5);
 
         TextView text = (TextView)findViewById(R.id.name);
-        text.setText("\n\n"+message);
-        getSupportActionBar().setTitle(message);
+        text.setText(message);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {

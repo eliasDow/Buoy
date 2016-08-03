@@ -7,7 +7,7 @@
         </shape>
     </item>
     <!-- This is the main color -->
-    <item android:bottom="2dp" android:right="2dp">
+    <item android:bottom="4dp" android:right="4dp">
         <shape>
             <solid android:color="@color/white" />
         </shape>

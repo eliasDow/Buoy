@@ -1,11 +1,11 @@
 <resources>
-    <string name="app_name">Buoy</string>
+    <string name="app_name">OpenBuoy</string>
     <string name="textView">Enter location or buoy code</string>
     <string name="enter">Enter</string>
     <string name="title_activity_get_data">getData</string>
     <string name="title_activity_data">DataActivity</string>
     <string name="title_activity_maps">Map</string>
-    <string name="link"><a href="http://www.ndbc.noaa.gov/">All data from the NDBC</a></string>
+    <string name="link"><a href="http://www.ndbc.noaa.gov/">All data from NDBC</a></string>
     <string name="title_activity_nav_bar">navBar</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>

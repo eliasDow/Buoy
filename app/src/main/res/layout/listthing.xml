@@ -2,8 +2,8 @@
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:padding="4dp"
+    android:padding="6dp"
     android:paddingTop="0dp"
     android:textSize="18sp"
-    android:background="@color/lightgray">
+    android:background="?android:selectableItemBackground">
 </TextView>
