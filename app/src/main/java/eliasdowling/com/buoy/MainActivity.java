@@ -11,6 +11,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -54,6 +55,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onResume(){
         super.onResume();
+        favView(map);
+        textView.setText("");
+    }
+
+    @Override
+    public void onRestart() {
+        super.onRestart();
         favView(map);
         textView.setText("");
     }
@@ -190,12 +198,9 @@ public class MainActivity extends AppCompatActivity {
             Object val = entry.getValue();
             favs[count] = (String)map.get(val);
             count++;
-            //Log.d("",key+val);
+            Log.d("",key+val);
         }
-        if(favs.length==0) {
-            SharedPreferences.Editor editor = prefs.edit();
-            editor.clear().commit();
-        }
+
         return favs;
     }
 
