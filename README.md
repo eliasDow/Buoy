@@ -4,9 +4,9 @@ A simple Android app that pulls data from the NDBC and displays it in a mobile f
 ## Upcoming features
 * Full favorite support (done!)
 * Past data (done!)
+* Map (done!)
 * UI overhaul (getting there)
-* Map
-* Location services
+* Location services (depends if i want to expand permissions)
 * Weather
 * Widget support for favorites
 
