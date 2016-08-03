@@ -1,9 +1,14 @@
 package eliasdowling.com.buoy;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
+
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -17,7 +22,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -78,10 +82,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         LatLng sydney = new LatLng(33, -117);
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(sydney,5));
-
-
-
     }
+
+
 
     final String[] LAT_ARRAY = new String[]{
             "13002","20.43","-23.13",
