@@ -136,7 +136,7 @@ public class Data {
     }
 
 
-    public String printDate(String[] data){
+    private String printDate(String[] data){
         String dateStr = data[0]+"-"+data[1]+"-"+data[2]+" "+data[3]+":"+data[4];
         //System.out.println(dateStr);
         try {
@@ -266,7 +266,7 @@ public class Data {
         return "Date: " + this.date +"\n"+ out;
     }
 
-    public String degreeToDir(String degree){
+    private String degreeToDir(String degree){
         double deg = Double.parseDouble(degree);
         String dir = "";
         if(deg>=348.75 || deg<=11.25){

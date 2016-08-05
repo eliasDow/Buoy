@@ -24,16 +24,17 @@ import com.github.aakira.expandablelayout.ExpandableRelativeLayout;
 import java.util.HashMap;
 import java.util.Map;
 
+//import eliasdowling.com.OpenBuoy.DataActivity;
+
 
 public class MainActivity extends AppCompatActivity {
-    public final static String EXTRA_MESSAGE = "com.eliasdowling.Buoy";
-    AutoCompleteTextView textView;
+    public final static String EXTRA_MESSAGE = "com.eliasdowling.buoy";
+    private AutoCompleteTextView textView;
     private ListView lister;
     public static HashMap map;
 
     private ListView mDrawerList;
-    private ArrayAdapter<String> mAdapter;
-    DrawerLayout mDrawerLayout;
+    private DrawerLayout mDrawerLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void createAutoTextview(){
+    private void createAutoTextview(){
         //Adapter to hold dropdown list
         FilterWithSpaceAdapter<String> adapter = new FilterWithSpaceAdapter<>(this,
                 android.R.layout.simple_list_item_1, FULLARRAY);
@@ -96,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void createNav(){
+    private void createNav(){
         final ActionBar ab = getSupportActionBar();
         ab.setHomeAsUpIndicator(R.drawable.ic_menu);
         ab.setDisplayHomeAsUpEnabled(true);
@@ -115,12 +116,14 @@ public class MainActivity extends AppCompatActivity {
                     editor.clear().apply();
                 }else if(position==1){
                     ndbc(view);
+                }else if(position==2){
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=eliasdowling.com.OpenBuoy")));
                 }
             }
         });
     }
 
-    public HashMap makeHash(String[] buoy){
+    private HashMap makeHash(String[] buoy){
         HashMap<String,String> map = new HashMap<>();
         for(int i=0;i<buoy.length;i++){
             map.put(buoy[i].substring(0,5),buoy[i]);
@@ -151,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void favView(HashMap map){
+    private void favView(HashMap map){
         //holds favorites in array
         String[] fave = getFav();
         ExpandableRelativeLayout expandableLayout
@@ -186,7 +189,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public String[] getFav(){
+    private String[] getFav(){
         //to expand favorites into longer list:
         //make for loop that iterates through prefs and adds all to array
         SharedPreferences prefs = getSharedPreferences("Favorites",MODE_PRIVATE);
@@ -215,14 +218,14 @@ public class MainActivity extends AppCompatActivity {
      * Link to ndbc site
      * @param v
      */
-    public void ndbc(View v){
+    private void ndbc(View v){
         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.ndbc.noaa.gov/"));
         startActivity(browserIntent);
     }
 
     private void addDrawerItems() {
-        String[] osArray = { "Clear all favorites", "All data from NDBC"};
-        mAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, osArray);
+        String[] osArray = { "Clear all favorites", "All data from NDBC","Please rate my app!"};
+        ArrayAdapter<String> mAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, osArray);
         mDrawerList.setAdapter(mAdapter);
     }
 

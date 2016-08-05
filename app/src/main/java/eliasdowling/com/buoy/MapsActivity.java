@@ -1,14 +1,9 @@
 package eliasdowling.com.buoy;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -25,8 +20,7 @@ import java.util.Iterator;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
 
-    private GoogleMap mMap;
-    HashMap<String,LatLng> latLonMap;
+    private HashMap<String,LatLng> latLonMap;
 
 
     @Override
@@ -38,7 +32,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        latLonMap = new HashMap<String,LatLng>();
+        latLonMap = new HashMap<>();
 
         for(int i=0;i<LAT_ARRAY.length;){
             latLonMap.put(LAT_ARRAY[i],new LatLng(Double.parseDouble(LAT_ARRAY[i+1]),Double.parseDouble(LAT_ARRAY[i+2])));
@@ -58,13 +52,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
+        GoogleMap mMap = googleMap;
 
         Iterator it = latLonMap.entrySet().iterator();
         while(it.hasNext()){
             HashMap.Entry pair = (HashMap.Entry)it.next();
             //System.out.println(pair.getKey() + " = " + pair.getValue());
-            mMap.addMarker(new MarkerOptions().position((LatLng)pair.getValue()).title((String)pair.getKey()));
+            mMap.addMarker(new MarkerOptions().position((LatLng)pair.getValue()).title((String)pair.getKey())).showInfoWindow();
             it.remove(); // avoids a ConcurrentModificationException
         }
 
@@ -86,7 +80,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
 
-    final String[] LAT_ARRAY = new String[]{
+    private final String[] LAT_ARRAY = new String[]{
             "13002","20.43","-23.13",
             "22101","37.24","126.02",
             "22102","34.79","125.78",

@@ -10,8 +10,8 @@ import java.util.Scanner;
 /**
  * Created by elias on 7/28/2016.
  */
-public class PastObs {
-    String buoy;
+class PastObs {
+    private final String buoy;
     public PastObs(String b){
         this.buoy = b.substring(0,5);
     }

@@ -5,11 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:paddingBottom="@dimen/activity_vertical_margin"
@@ -55,7 +53,6 @@
             android:layout_below="@+id/button"
             android:layout_marginTop="10dp">
         <Button
-            android:id="@+id/expandableButton1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:drawableRight="@drawable/chevrondown"
@@ -94,14 +91,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/cyan"
-            android:id="@+id/linlay2"
             android:layout_below="@+id/expandableLayout1"
             android:layout_marginTop="10dp">
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Map"
-            android:id="@+id/button2"
             android:onClick="getMap"
             android:textSize="16sp"
             android:textColor="@color/white"
@@ -125,7 +120,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:src="@drawable/icon"
+            android:src="@mipmap/ic_launcher"
             android:paddingTop="5dp"
             />
         <ListView

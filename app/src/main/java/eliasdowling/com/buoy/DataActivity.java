@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.widget.AdapterView;
@@ -22,8 +21,8 @@ import java.util.concurrent.ExecutionException;
 
 
 public class DataActivity extends AppCompatActivity {
-    public TextView text;
-    public int count = 0;
+    private TextView text;
+    private int count = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -135,7 +134,7 @@ public class DataActivity extends AppCompatActivity {
 
     }
 
-    public void pastDataSelector(Spinner d,ArrayList<Data> da){
+    private void pastDataSelector(Spinner d, ArrayList<Data> da){
         //wind wave tide pressure temp
         final ArrayList<Data> hold = da;
 
@@ -230,7 +229,7 @@ public class DataActivity extends AppCompatActivity {
 
     }
 
-    class RetrieveData extends AsyncTask<String,Void,Data[]> {
+    private class RetrieveData extends AsyncTask<String,Void,Data[]> {
 
         protected Data[] doInBackground(String... params) {
             Data[] dArr = new Data[2];
@@ -241,7 +240,7 @@ public class DataActivity extends AppCompatActivity {
         }
     }
 
-    class RetrievePast extends AsyncTask<String,Void,ArrayList<Data>> {
+    private class RetrievePast extends AsyncTask<String,Void,ArrayList<Data>> {
 
         protected ArrayList<Data> doInBackground(String... params) {
             PastObs past = new PastObs(params[0]);

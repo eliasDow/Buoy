@@ -1,7 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="EntryPointsManager">
-    <entry_points version="2.0" />
+    <entry_points version="2.0">
+      <entry_point TYPE="method" FQNAME="eliasdowling.com.buoy.Data Data()" />
+      <entry_point TYPE="method" FQNAME="eliasdowling.com.buoy.Data void setWaveDir(java.lang.String waveDir)" />
+      <entry_point TYPE="method" FQNAME="eliasdowling.com.buoy.Data void setAvgPeriod(java.lang.String avgPeriod)" />
+      <entry_point TYPE="method" FQNAME="eliasdowling.com.buoy.Data java.lang.String getAvgPeriod()" />
+      <entry_point TYPE="method" FQNAME="eliasdowling.com.buoy.Data void setDomPeriod(java.lang.String domPeriod)" />
+      <entry_point TYPE="method" FQNAME="eliasdowling.com.buoy.Data java.lang.String getDomPeriod()" />
+      <entry_point TYPE="method" FQNAME="eliasdowling.com.buoy.Data void setWaveHgt(java.lang.String waveHgt)" />
+      <entry_point TYPE="method" FQNAME="eliasdowling.com.buoy.Data void setWindDir(java.lang.String windDir)" />
+      <entry_point TYPE="method" FQNAME="eliasdowling.com.buoy.Data void setWindSpeed(java.lang.String windSpeed)" />
+      <entry_point TYPE="method" FQNAME="eliasdowling.com.buoy.Data void setDate(java.lang.String date)" />
+      <entry_point TYPE="method" FQNAME="eliasdowling.com.buoy.Data void setFileName(java.lang.String fileName)" />
+      <entry_point TYPE="method" FQNAME="eliasdowling.com.buoy.Data java.lang.String getFileName()" />
+      <entry_point TYPE="method" FQNAME="eliasdowling.com.buoy.Data void setTide(java.lang.String tide)" />
+      <entry_point TYPE="method" FQNAME="eliasdowling.com.buoy.Data void setPressure(java.lang.String pressure)" />
+      <entry_point TYPE="method" FQNAME="eliasdowling.com.buoy.Data void setWaterTemp(java.lang.String waterTemp)" />
+      <entry_point TYPE="method" FQNAME="eliasdowling.com.buoy.Data void setAirTemp(java.lang.String airTemp)" />
+      <entry_point TYPE="method" FQNAME="eliasdowling.com.buoy.Data Data(java.lang.String file)" />
+      <entry_point TYPE="method" FQNAME="eliasdowling.com.buoy.Data Data(eliasdowling.com.buoy.Data d)" />
+      <entry_point TYPE="class" FQNAME="eliasdowling.com.buoy.Data" />
+    </entry_points>
   </component>
   <component name="NullableNotNullManager">
     <option name="myDefaultNullable" value="android.support.annotation.Nullable" />
