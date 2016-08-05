@@ -84,7 +84,9 @@
                 android:id="@+id/listy"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingTop="0dp" />
+                android:paddingTop="0dp"
+                android:fadeScrollbars="false"
+                android:minHeight="100dp"/>
 
         </com.github.aakira.expandablelayout.ExpandableRelativeLayout>
         <LinearLayout

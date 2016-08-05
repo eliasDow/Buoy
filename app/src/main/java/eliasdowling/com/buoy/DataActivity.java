@@ -56,14 +56,14 @@ public class DataActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Added to favorites", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
                 SharedPreferences prefs = getSharedPreferences("Favorites",MODE_PRIVATE);
                 SharedPreferences.Editor editor = prefs.edit();
                 Map<String,?> keys = prefs.getAll();
                 count = keys.size();
 
                 if(!keys.containsValue(value)){
+                    Snackbar.make(view, "Added to favorites", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
                     editor.putString(Integer.toString(count+1),value).apply();
                 }else Snackbar.make(view, "Already in favorites", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
@@ -234,6 +234,11 @@ public class DataActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        startActivity(new Intent(this, MainActivity.class));
     }
 
     private class RetrieveData extends AsyncTask<String,Void,Data[]> {

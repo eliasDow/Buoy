@@ -1,5 +1,6 @@
 package eliasdowling.com.buoy;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -14,9 +15,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import com.github.aakira.expandablelayout.ExpandableRelativeLayout;
@@ -32,9 +35,11 @@ public class MainActivity extends AppCompatActivity {
     private AutoCompleteTextView textView;
     private ListView lister;
     public static HashMap map;
+    static ExpandableRelativeLayout expandableLayout;
 
     private ListView mDrawerList;
     private DrawerLayout mDrawerLayout;
+    FilterWithSpaceAdapter<String> itemsAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,8 +68,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onRestart() {
         super.onRestart();
-        favView(map);
         textView.setText("");
+        /*
+        Intent intent = getIntent();
+        overridePendingTransition(0, 0);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        finish();
+        overridePendingTransition(0, 0);
+        startActivity(intent);*/
     }
 
     @Override
@@ -144,7 +155,6 @@ public class MainActivity extends AppCompatActivity {
         if(!textView.getText().toString().matches("")&&map.containsKey(textView.getText().toString().substring(0,5).toUpperCase())&&isNetworkAvailable(getApplicationContext())){
             myIntent.putExtra(EXTRA_MESSAGE, textView.getText().toString());
             startActivity(myIntent);
-            onResume();
         }else if(isNetworkAvailable(getApplicationContext())){
             Snackbar.make(view, textView.getText().toString()+"Invalid buoy. Contact me if you want this buoy added!", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
@@ -157,10 +167,8 @@ public class MainActivity extends AppCompatActivity {
     private void favView(HashMap map){
         //holds favorites in array
         String[] fave = getFav();
-        ExpandableRelativeLayout expandableLayout
-                = (ExpandableRelativeLayout) findViewById(R.id.expandableLayout1);
 
-        FilterWithSpaceAdapter<String> itemsAdapter =
+        itemsAdapter =
                 new FilterWithSpaceAdapter<>(this, R.layout.listthing,fave);
 
         lister = (ListView)findViewById(R.id.listy);
@@ -189,6 +197,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+
     private String[] getFav(){
         //to expand favorites into longer list:
         //make for loop that iterates through prefs and adds all to array
@@ -212,7 +221,7 @@ public class MainActivity extends AppCompatActivity {
             Snackbar.make(textView, "No favorites added. Type in the search bar above or find a buoy on the map to add one", Snackbar.LENGTH_LONG)
                     .show();
         }
-        ExpandableRelativeLayout expandableLayout
+        expandableLayout
                 = (ExpandableRelativeLayout) findViewById(R.id.expandableLayout1);
         //expandableLayout.initLayout(true);
         expandableLayout.toggle(); // toggle expand and collapse
