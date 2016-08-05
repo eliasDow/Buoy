@@ -34,16 +34,23 @@ public class DataActivity extends AppCompatActivity {
         //this gets string from input and displays text entered
         Intent intent = getIntent();
         final String message = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
-        //value to put into url
-        if(message.length()<6){
-            HashMap map = MainActivity.map;
-            String mapTitle = map.get(message).toString();
-            getSupportActionBar().setTitle(mapTitle);
-        }else         getSupportActionBar().setTitle(message);
-        final String value = message.substring(0,5);
-
+        final String mapMes = intent.getStringExtra("MapAct");
+        String val;
         TextView text = (TextView)findViewById(R.id.name);
-        text.setText(message);
+
+        //value to put into url
+        if(mapMes!=null){
+            HashMap map = MainActivity.map;
+            String mapTitle = map.get(mapMes).toString();
+            getSupportActionBar().setTitle(mapTitle);
+            val=mapMes;
+            text.setText(mapTitle);
+        }else {
+            getSupportActionBar().setTitle(message);
+            val = message.substring(0,5);
+            text.setText(message);
+        }
+        final String value = val;
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {

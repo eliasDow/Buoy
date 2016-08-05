@@ -208,6 +208,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void expandableButton1(View view) {
+        if(getFav().length == 0){
+            Snackbar.make(textView, "No favorites added. Type in the search bar above or find a buoy on the map to add one", Snackbar.LENGTH_LONG)
+                    .show();
+        }
         ExpandableRelativeLayout expandableLayout
                 = (ExpandableRelativeLayout) findViewById(R.id.expandableLayout1);
         //expandableLayout.initLayout(true);

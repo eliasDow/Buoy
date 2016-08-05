@@ -58,7 +58,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         while(it.hasNext()){
             HashMap.Entry pair = (HashMap.Entry)it.next();
             //System.out.println(pair.getKey() + " = " + pair.getValue());
-            mMap.addMarker(new MarkerOptions().position((LatLng)pair.getValue()).title((String)pair.getKey())).showInfoWindow();
+            mMap.addMarker(new MarkerOptions().position((LatLng)pair.getValue()).title((String)pair.getKey()));
             it.remove(); // avoids a ConcurrentModificationException
         }
 
@@ -67,7 +67,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             public void onInfoWindowClick(Marker marker) {
                 if (MainActivity.isNetworkAvailable(getApplicationContext())) {
                     Intent intent = new Intent(MapsActivity.this, DataActivity.class);
-                    intent.putExtra("com.eliasdowling.Buoy", marker.getTitle());
+                    intent.putExtra("MapAct", marker.getTitle());
                     startActivity(intent);
                 }else Toast.makeText(getApplicationContext(),"Connect unavailable",Toast.LENGTH_LONG).show();
 
