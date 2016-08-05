@@ -94,7 +94,8 @@
             android:layout_height="wrap_content"
             android:background="@color/cyan"
             android:layout_below="@+id/expandableLayout1"
-            android:layout_marginTop="10dp">
+            android:layout_marginTop="10dp"
+            android:id="@+id/linearLayout">
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -108,8 +109,6 @@
             android:background="?android:selectableItemBackground"
             android:paddingLeft="45dp"/>
         </LinearLayout>
-
-
     </RelativeLayout>
     <LinearLayout
         android:layout_width="240dp"

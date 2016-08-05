@@ -238,7 +238,16 @@ public class DataActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        startActivity(new Intent(this, MainActivity.class));
+        Intent intent = getIntent();
+        String checkFlag= intent.getStringExtra("flag");
+
+        if(checkFlag.equals("home")) {
+            startActivity(new Intent(this, MainActivity.class));
+        }else if(checkFlag.equals("map")){
+            super.onBackPressed();
+        }else if(checkFlag.equals("fav")){
+            super.onBackPressed();
+        }
     }
 
     private class RetrieveData extends AsyncTask<String,Void,Data[]> {

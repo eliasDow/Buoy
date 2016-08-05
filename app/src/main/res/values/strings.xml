@@ -5,6 +5,10 @@
     <string name="title_activity_maps">Map</string>
 
     <string name="past">Choose past data</string>
+    <string name="title_activity_tab_try">tabTry</string>
+    <string name="action_settings">Settings</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+    <string name="title_activity_tab_ex">tabEx</string>
 
 
 </resources>

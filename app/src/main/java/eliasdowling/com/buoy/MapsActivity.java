@@ -68,6 +68,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 if (MainActivity.isNetworkAvailable(getApplicationContext())) {
                     Intent intent = new Intent(MapsActivity.this, DataActivity.class);
                     intent.putExtra("MapAct", marker.getTitle());
+                    intent.putExtra("flag","map");
+
                     startActivity(intent);
                 }else Toast.makeText(getApplicationContext(),"Connect unavailable",Toast.LENGTH_LONG).show();
 

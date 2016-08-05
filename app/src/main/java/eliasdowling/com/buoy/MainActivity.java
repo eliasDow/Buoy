@@ -69,13 +69,6 @@ public class MainActivity extends AppCompatActivity {
     public void onRestart() {
         super.onRestart();
         textView.setText("");
-        /*
-        Intent intent = getIntent();
-        overridePendingTransition(0, 0);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-        finish();
-        overridePendingTransition(0, 0);
-        startActivity(intent);*/
     }
 
     @Override
@@ -128,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
                 }else if(position==1){
                     ndbc(view);
                 }else if(position==2){
-                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=eliasdowling.com.OpenBuoy")));
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=eliasdowling.com.buoy")));
                 }
             }
         });
@@ -154,6 +147,7 @@ public class MainActivity extends AppCompatActivity {
 
         if(!textView.getText().toString().matches("")&&map.containsKey(textView.getText().toString().substring(0,5).toUpperCase())&&isNetworkAvailable(getApplicationContext())){
             myIntent.putExtra(EXTRA_MESSAGE, textView.getText().toString());
+            myIntent.putExtra("flag","home");
             startActivity(myIntent);
         }else if(isNetworkAvailable(getApplicationContext())){
             Snackbar.make(view, textView.getText().toString()+"Invalid buoy. Contact me if you want this buoy added!", Snackbar.LENGTH_LONG)
@@ -188,6 +182,8 @@ public class MainActivity extends AppCompatActivity {
                 if(isNetworkAvailable(getApplicationContext())) {
                     Intent newIntent = new Intent(view.getContext(), DataActivity.class);
                     newIntent.putExtra(EXTRA_MESSAGE, itemValue);
+                    newIntent.putExtra("flag","fav");
+
                     startActivity(newIntent);
                 }else{
                     Snackbar.make(view, "Connection unavailable", Snackbar.LENGTH_SHORT)
