@@ -6,6 +6,7 @@ A simple Android app that pulls data from the NDBC and displays it in a mobile f
 * Past data (done!)
 * Map (done!)
 * UI overhaul (getting there)
+* Better search - use GeoCode api
 * Location services (depends if i want to expand permissions)
 * Weather
 * Widget support for favorites
