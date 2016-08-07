@@ -23,6 +23,8 @@ import java.util.concurrent.ExecutionException;
 public class DataActivity extends AppCompatActivity {
     private TextView text;
     private int count = 0;
+    public String val;
+    private boolean inFav;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +37,7 @@ public class DataActivity extends AppCompatActivity {
         Intent intent = getIntent();
         final String message = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
         final String mapMes = intent.getStringExtra("MapAct");
-        String val;
+
         TextView text = (TextView)findViewById(R.id.name);
 
         //value to put into url
@@ -50,10 +52,24 @@ public class DataActivity extends AppCompatActivity {
             val = message.substring(0,5);
             text.setText(message);
         }
-        final String value = val;
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        SharedPreferences prefs = getSharedPreferences("Favorites",MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        Map<String,?> keys = prefs.getAll();
+        count = keys.size();
+
+        inFav=false;
+
+        if(keys.containsValue(val)){
+            fab.setImageResource(R.drawable.heartfilled);
+            inFav=true;
+        }else {
+            fab.setImageResource(R.drawable.ic_favorite_border_black_24dp);
+            inFav=false;
+        }
+
+        /*fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 SharedPreferences prefs = getSharedPreferences("Favorites",MODE_PRIVATE);
@@ -62,16 +78,19 @@ public class DataActivity extends AppCompatActivity {
                 count = keys.size();
 
                 if(!keys.containsValue(value)){
-                    Snackbar.make(view, "Added to favorites", Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show();
+                    Snackbar.make(view, "Added to favorites", Snackbar.LENGTH_LONG).show();
+                    //fab.setImageDrawable(getResources().getDrawable(R.drawable.heartfilled));
                     editor.putString(Integer.toString(count+1),value).apply();
-                }else Snackbar.make(view, "Already in favorites", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                }else if(favhold){
+                    Snackbar.make(view, "Removed from favorites", Snackbar.LENGTH_LONG).show();
+                    editor.remove(value).apply();
+                    fab.setImageResource(R.drawable.ic_favorite_border_black_24dp);
+                }
             }
-        });
+        });*/
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        FloatingActionButton rem = (FloatingActionButton) findViewById(R.id.remove);
+       /* FloatingActionButton rem = (FloatingActionButton) findViewById(R.id.remove);
         rem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -83,7 +102,8 @@ public class DataActivity extends AppCompatActivity {
                 for(Map.Entry<String,?> entry : keys.entrySet()){
                     String key = entry.getKey();
                     Object val = entry.getValue();
-                    if(val.equals(message.substring(0,5))) {
+                    //value is the buoy code
+                    if(val.equals(value)) {
                         editor.remove(key).apply();
                         Snackbar.make(view, "Removed from favorites", Snackbar.LENGTH_LONG)
                                 .setAction("Action", null).show();
@@ -97,15 +117,15 @@ public class DataActivity extends AppCompatActivity {
                 }
 
             }
-        });
+        });*/
 
         Data output[] = null;
         ArrayList<Data> past=new ArrayList<>();
 
         //Async: pass: filename,Void,Data
         try {
-            output = new RetrieveData().execute(value).get();
-            past = new RetrievePast().execute(value).get();
+            output = new RetrieveData().execute(val).get();
+            past = new RetrievePast().execute(val).get();
         }catch(java.lang.InterruptedException i){
             i.printStackTrace();
         }catch(ExecutionException e){
@@ -138,6 +158,35 @@ public class DataActivity extends AppCompatActivity {
 
         pastDataSelector(dropdown,past);
 
+
+    }
+
+    public void favorite(View v){
+        FloatingActionButton fab = (FloatingActionButton)findViewById(R.id.fab);
+        SharedPreferences prefs = getSharedPreferences("Favorites",MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        Map<String,?> keys = prefs.getAll();
+        count = keys.size();
+
+        if(!keys.containsValue(val)){
+            Snackbar.make(v, "Added to favorites", Snackbar.LENGTH_LONG).show();
+            fab.setImageResource(R.drawable.heartfilled);
+            editor.putString(Integer.toString(count+1),val).apply();
+            keys = prefs.getAll();
+        }else if(keys.containsValue(val)){
+            Snackbar.make(v, "Removed from favorites", Snackbar.LENGTH_LONG).show();
+            for(Map.Entry<String,?> entry : keys.entrySet()){
+                String key = entry.getKey();
+                Object entryVal = entry.getValue();
+                //value is the buoy code
+                if(entryVal.equals(val)) {
+                    editor.remove(key).apply();
+                    break;
+                }
+            }
+            fab.setImageResource(R.drawable.ic_favorite_border_black_24dp);
+            keys = prefs.getAll();
+        }
 
     }
 

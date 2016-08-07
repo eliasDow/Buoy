@@ -77,11 +77,11 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        android:src="@drawable/ic_favorite_border_black_24dp"
+        android:onClick="favorite"
         app:backgroundTint="@android:color/white"
         />
 
-    <android.support.design.widget.FloatingActionButton
+    <!--<android.support.design.widget.FloatingActionButton
         android:id="@+id/remove"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -89,5 +89,5 @@
         android:src="@drawable/ic_clear_black_24dp"
         app:backgroundTint="@android:color/white"
         android:layout_margin="@dimen/fab_margin"/>
-
+-->
 </android.support.design.widget.CoordinatorLayout>
