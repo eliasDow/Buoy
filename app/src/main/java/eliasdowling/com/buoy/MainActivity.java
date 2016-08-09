@@ -1,11 +1,14 @@
 package eliasdowling.com.buoy;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
@@ -13,6 +16,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,9 +27,23 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import com.github.aakira.expandablelayout.ExpandableRelativeLayout;
+import com.google.android.gms.maps.model.LatLng;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+
+import javax.net.ssl.HttpsURLConnection;
 
 //import eliasdowling.com.OpenBuoy.DataActivity;
 
@@ -56,6 +74,11 @@ public class MainActivity extends AppCompatActivity {
         //creates favorites
         getFav();
         favView(map);
+
+        //this will go in sendbuoy
+
+
+
     }
 
     @Override
@@ -89,6 +112,27 @@ public class MainActivity extends AppCompatActivity {
         //main typable textview
         textView = (AutoCompleteTextView) findViewById(R.id.autoText);
         textView.setAdapter(adapter);
+
+        textView.setOnKeyListener(new View.OnKeyListener()
+        {
+            public boolean onKey(View v, int keyCode, KeyEvent event)
+            {
+                if (event.getAction() == KeyEvent.ACTION_DOWN)
+                {
+                    switch (keyCode)
+                    {
+                        case KeyEvent.KEYCODE_DPAD_CENTER:
+                        case KeyEvent.KEYCODE_ENTER:
+                            sendBuoy(v);
+                            return true;
+                        default:
+                            break;
+                    }
+                }
+                return false;
+            }
+        });
+        ;
 
         //allows user to click on dropdown to take them directly to buoy page
         textView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -145,13 +189,40 @@ public class MainActivity extends AppCompatActivity {
         // Do something in response to button
         final Intent myIntent = new Intent(this,DataActivity.class);
 
-        if(!textView.getText().toString().matches("")&&map.containsKey(textView.getText().toString().substring(0,5).toUpperCase())&&isNetworkAvailable(getApplicationContext())){
+        if(textView.getText().toString().length()>4&&!textView.getText().toString().matches("")&&map.containsKey(textView.getText().toString().substring(0,5).toUpperCase())
+                &&isNetworkAvailable(getApplicationContext())){
             myIntent.putExtra(EXTRA_MESSAGE, textView.getText().toString());
             myIntent.putExtra("flag","home");
             startActivity(myIntent);
         }else if(isNetworkAvailable(getApplicationContext())){
-            Snackbar.make(view, textView.getText().toString()+"Invalid buoy. Contact me if you want this buoy added!", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show();
+            DataLongOperationAsynchTask rand=null;
+            LatLng latlng = null;
+            try {
+                rand = new DataLongOperationAsynchTask();
+                rand.execute(textView.getText().toString().replaceAll("\\s",""));
+                latlng = rand.get();
+            }catch(java.lang.InterruptedException i){
+                i.printStackTrace();
+            }catch(ExecutionException e){
+                e.printStackTrace();
+            }
+
+
+
+            if(latlng!=null) {
+                String closest = findClosest(latlng.latitude, latlng.longitude);
+                if (closest.equals("No buoy found within 100 miles of given location")) {
+                    Snackbar.make(view, closest, Snackbar.LENGTH_SHORT)
+                            .show();
+                } else {
+                    myIntent.putExtra(EXTRA_MESSAGE, closest);
+                    myIntent.putExtra("MapAct", closest);
+                    startActivity(myIntent);
+                }
+            }else{
+                Snackbar.make(view, "Invalid search term", Snackbar.LENGTH_SHORT)
+                        .show();
+            }
         }else{
             Snackbar.make(view, "Connection unavailable", Snackbar.LENGTH_SHORT)
                     .show();
@@ -242,6 +313,149 @@ public class MainActivity extends AppCompatActivity {
         final ConnectivityManager connectivityManager = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE));
         return connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected();
     }
+
+    //geocoder stuff
+    private class DataLongOperationAsynchTask extends AsyncTask<String, Void, LatLng> {
+        ProgressDialog dialog = new ProgressDialog(MainActivity.this);
+       @Override
+        protected void onPreExecute() {
+           super.onPreExecute();
+           dialog.setMessage("Finding closest buoy to search...");
+           dialog.setCanceledOnTouchOutside(false);
+           dialog.show();
+
+       }
+
+        @Override
+        protected LatLng doInBackground(String... params) {
+            String response = params[0];
+            String[] test=new String[5];
+            try {
+                response = getLatLongByURL("http://maps.google.com/maps/api/geocode/json?address="+response+"&sensor=false");
+                Log.d("response",""+response);
+                test[0]=response;
+            } catch (Exception e) {
+                Log.d("error",e.getStackTrace().toString());
+            }
+
+            LatLng b=new LatLng(0,0);
+            try {
+                JSONObject jsonObject = new JSONObject(test[0]);
+                String result = jsonObject.getString("status");
+
+                //if there are no results from json call
+                if(result.equals("ZERO_RESULTS")){
+                    b = null;
+                }else {
+                    double lng = ((JSONArray) jsonObject.get("results")).getJSONObject(0)
+                            .getJSONObject("geometry").getJSONObject("location")
+                            .getDouble("lng");
+
+                    double lat = ((JSONArray) jsonObject.get("results")).getJSONObject(0)
+                            .getJSONObject("geometry").getJSONObject("location")
+                            .getDouble("lat");
+                    b = new LatLng(lat, lng);
+
+                    Log.d("latitude", "" + lat);
+                    Log.d("longitude", "" + lng);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            return b;
+        }
+
+        @Override
+        protected void onPostExecute(LatLng lng){
+            super.onPostExecute(lng);
+            dialog.dismiss();
+        }
+    }
+
+
+    public String getLatLongByURL(String requestURL) {
+        URL url;
+        String response = "";
+        try {
+            url = new URL(requestURL);
+
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setReadTimeout(15000);
+            conn.setConnectTimeout(15000);
+            conn.setRequestMethod("GET");
+            conn.setDoInput(true);
+            conn.setRequestProperty("Content-Type",
+                    "application/x-www-form-urlencoded");
+            conn.setDoOutput(true);
+            int responseCode = conn.getResponseCode();
+
+            if (responseCode == HttpsURLConnection.HTTP_OK) {
+                String line;
+                BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                while ((line = br.readLine()) != null) {
+                    response += line;
+                }
+            } else {
+                response = "";
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return response;
+    }
+
+    public String findClosest(double lat,double lon){
+        Location loc1 = new Location("");
+        loc1.setLatitude(lat);
+        loc1.setLongitude(lon);
+
+        Location loc2 = new Location("");
+
+        float distanceFrom;
+        float distancePlace=160000;
+
+        LatLng closest = new LatLng(999,999);
+
+        for(int i=0;i<MapsActivity.LAT_ARRAY.length;){
+            loc2.setLatitude(round(Double.parseDouble(MapsActivity.LAT_ARRAY[i+1]),2));
+            loc2.setLongitude(round(Double.parseDouble(MapsActivity.LAT_ARRAY[i+2]),2));
+
+            distanceFrom = loc1.distanceTo(loc2);
+            if(distanceFrom<distancePlace) {
+                distancePlace = distanceFrom;
+                closest = new LatLng(loc2.getLatitude(),loc2.getLongitude());
+            }
+            i+=3;
+        }
+        MapsActivity map = new MapsActivity();
+        map.initLatMap();
+
+        String closestBuoy="";
+        for(Map.Entry<String,?> entry : MapsActivity.latLonMap.entrySet()){
+            String key = entry.getKey();
+            Object entryVal = entry.getValue();
+            //value is the buoy code
+            if(entryVal.equals(closest)) {
+                closestBuoy = key;
+                break;
+            }
+        }
+        if(closestBuoy.equals("")) return "No buoy found within 100 miles of given location";
+        else return closestBuoy;
+    }
+
+
+    public static double round(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+
+        BigDecimal bd = new BigDecimal(value);
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
+    }
+
+
 
     //array with all info
     private static final String[] FULLARRAY = new String[]{
@@ -1052,6 +1266,7 @@ public class MainActivity extends AppCompatActivity {
             "WAKP8, 1890000, Wake Island ",
             "WASD2, 8594900, Washington, DC ",
             "WATS1, Lake Wateree, SC ",
+            "WAXM3, Carriage House, Waquoit Bay Reserve, MA",
             "WBYA1, 8732828, Weeks Bay, AL ",
             "WDSV2, 8638614, Willoughby Deguassing Station, VA ",
             "WDEL1, Shell West Delta 143 ",

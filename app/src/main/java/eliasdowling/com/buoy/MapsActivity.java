@@ -15,12 +15,14 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.Iterator;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
 
-    private HashMap<String,LatLng> latLonMap;
+    public static HashMap<String,LatLng> latLonMap;
 
 
     @Override
@@ -32,12 +34,24 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        initLatMap();
+    }
+
+    public void initLatMap(){
         latLonMap = new HashMap<>();
 
         for(int i=0;i<LAT_ARRAY.length;){
-            latLonMap.put(LAT_ARRAY[i],new LatLng(Double.parseDouble(LAT_ARRAY[i+1]),Double.parseDouble(LAT_ARRAY[i+2])));
+            latLonMap.put(LAT_ARRAY[i],new LatLng(round(Double.parseDouble(LAT_ARRAY[i+1]),2),round(Double.parseDouble(LAT_ARRAY[i+2]),2)));
             i+=3;
         }
+    }
+
+    public static double round(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+
+        BigDecimal bd = new BigDecimal(value);
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
     }
 
 
@@ -82,7 +96,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
 
-    private final String[] LAT_ARRAY = new String[]{
+    public final static String[] LAT_ARRAY = new String[]{
             "13002","20.43","-23.13",
             "22101","37.24","126.02",
             "22102","34.79","125.78",

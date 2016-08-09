@@ -69,55 +69,7 @@ public class DataActivity extends AppCompatActivity {
             inFav=false;
         }
 
-        /*fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                SharedPreferences prefs = getSharedPreferences("Favorites",MODE_PRIVATE);
-                SharedPreferences.Editor editor = prefs.edit();
-                Map<String,?> keys = prefs.getAll();
-                count = keys.size();
-
-                if(!keys.containsValue(value)){
-                    Snackbar.make(view, "Added to favorites", Snackbar.LENGTH_LONG).show();
-                    //fab.setImageDrawable(getResources().getDrawable(R.drawable.heartfilled));
-                    editor.putString(Integer.toString(count+1),value).apply();
-                }else if(favhold){
-                    Snackbar.make(view, "Removed from favorites", Snackbar.LENGTH_LONG).show();
-                    editor.remove(value).apply();
-                    fab.setImageResource(R.drawable.ic_favorite_border_black_24dp);
-                }
-            }
-        });*/
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-       /* FloatingActionButton rem = (FloatingActionButton) findViewById(R.id.remove);
-        rem.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                SharedPreferences prefs = getSharedPreferences("Favorites",MODE_PRIVATE);
-                SharedPreferences.Editor editor = prefs.edit();
-                Map<String,?> keys = prefs.getAll();
-                boolean found = false;
-                for(Map.Entry<String,?> entry : keys.entrySet()){
-                    String key = entry.getKey();
-                    Object val = entry.getValue();
-                    //value is the buoy code
-                    if(val.equals(value)) {
-                        editor.remove(key).apply();
-                        Snackbar.make(view, "Removed from favorites", Snackbar.LENGTH_LONG)
-                                .setAction("Action", null).show();
-                        found = true;
-                        break;
-                    }
-                }
-                if(!found){
-                    Snackbar.make(view, "This buoy is not in your favorites", Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show();
-                }
-
-            }
-        });*/
 
         Data output[] = null;
         ArrayList<Data> past=new ArrayList<>();
@@ -224,7 +176,7 @@ public class DataActivity extends AppCompatActivity {
                         pastReturn="";
                         if(hold.get(0).getWaveDir()!=null){
                             for (Data d : hold) {
-                                pastReturn += d.getDate().substring(10, d.getDate().length()) + " " + d.getWaveHgt() + " ft " + d.getWaveDir() + "\n";
+                                pastReturn += d.getDate().substring(10, d.getDate().length()) + " " + d.getWaveHgt() + " ft " + d.getWaveDir() + " @ "+d.getDomPeriod()+" sec\n";
                             }
                             text.setText(pastReturn);
                         }else text.setText("No wave data available");
