@@ -2,7 +2,12 @@
 A simple Android app that pulls data from the NDBC and displays it in a mobile friendly easy to read app.
 
 
-<img src="/8-9screenshots/Screenshot_20160809-105016.png" width="200" height="200"/>
+<img src="/8-9screenshots/Screenshot_20160809-105016.png" width="360" height="640"/>
+<img src="/8-9screenshots/Screenshot_20160809-105023.png" width="360" height="640"/>
+<img src="/8-9screenshots/Screenshot_20160809-105110.png" width="360" height="640"/>
+<img src="/8-9screenshots/Screenshot_20160809-105133.png" width="360" height="640"/>
+
+
 
 
 ## Finished features
