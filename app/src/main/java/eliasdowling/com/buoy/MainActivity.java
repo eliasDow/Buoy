@@ -1,6 +1,7 @@
 package eliasdowling.com.buoy;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -47,7 +48,7 @@ import javax.net.ssl.HttpsURLConnection;
 
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity{
     public final static String EXTRA_MESSAGE = "com.eliasdowling.buoy";
     private AutoCompleteTextView textView;
     private ListView lister;
@@ -57,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
     private ListView mDrawerList;
     private DrawerLayout mDrawerLayout;
     FilterWithSpaceAdapter<String> itemsAdapter;
+    public String searchresult;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -237,33 +239,14 @@ public class MainActivity extends AppCompatActivity {
             startActivity(myIntent);
         //else just searches whatever is inputted into search bar as long as network is available
         }else if(isNetworkAvailable(getApplicationContext())){
-            DataLongOperationAsynchTask rand=null;
-            LatLng latlng = new LatLng(0,0);
+            //LatLng latlng = new LatLng(0,0);
             //calls geocoder api in background
-            Snackbar.make(view, "Loading...", Snackbar.LENGTH_SHORT)
-                    .show();
-            rand = new DataLongOperationAsynchTask();
-            try {
-                rand.execute(textView.getText().toString().replaceAll("\\s", ""));
-                latlng = rand.get();
-            }catch(java.lang.InterruptedException|ExecutionException i) {
-                i.printStackTrace();
-            }
-            //may return null if search term is invalid
-            if(latlng!=null) {
-                String closest = findClosest(latlng.latitude, latlng.longitude);
-                if (closest.equals("No buoy found within 100 miles of given location")) {
-                    Snackbar.make(view, closest, Snackbar.LENGTH_SHORT)
-                            .show();
-                } else {
-                    myIntent.putExtra(EXTRA_MESSAGE, closest);
-                    myIntent.putExtra("MapAct", closest);
-                    startActivity(myIntent);
-                }
-            }else{
-                Snackbar.make(view, "Invalid search term", Snackbar.LENGTH_SHORT)
-                        .show();
-            }
+            /*Snackbar.make(view, "Loading...", Snackbar.LENGTH_SHORT)
+                    .show();*/
+
+            DataLongOperationAsynchTask async = new DataLongOperationAsynchTask();
+            async.execute(textView.getText().toString().replaceAll("\\s", ""));
+
         }else{
             Snackbar.make(view, "Connection unavailable", Snackbar.LENGTH_SHORT)
                     .show();
@@ -360,7 +343,19 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Calling geocoder api in background
      */
-    private class DataLongOperationAsynchTask extends AsyncTask<String, Void, LatLng> {
+
+
+    public class DataLongOperationAsynchTask extends AsyncTask<String, Void, LatLng> {
+
+        ProgressDialog dia = new ProgressDialog(MainActivity.this);
+
+        @Override
+        protected void onPreExecute(){
+            super.onPreExecute();
+            dia.setMessage("Finding closest buoy to search...");
+            dia.setCanceledOnTouchOutside(false);
+            dia.show();
+        }
         @Override
         protected LatLng doInBackground(String... params) {
             String response = params[0];
@@ -398,6 +393,29 @@ public class MainActivity extends AppCompatActivity {
             }
 
             return b;
+        }
+
+        @Override
+        protected void onPostExecute(LatLng lng){
+            super.onPostExecute(lng);
+            if(lng!=null) {
+                String buoy = findClosest(lng.latitude, lng.longitude);
+                searchresult = buoy;
+            }else searchresult = null;
+            dia.dismiss();
+            Intent myIntent = new Intent(MainActivity.this,DataActivity.class);
+            if (searchresult!=null&&searchresult.equals("No buoy found within 100 miles of given location")) {
+                Snackbar.make(findViewById(android.R.id.content)
+                        ,searchresult, Snackbar.LENGTH_SHORT)
+                        .show();
+            } else if(searchresult!=null){
+                myIntent.putExtra(EXTRA_MESSAGE, searchresult);
+                myIntent.putExtra("MapAct", searchresult);
+                startActivity(myIntent);
+            }else{
+                Snackbar.make(findViewById(android.R.id.content), "Invalid search term", Snackbar.LENGTH_SHORT)
+                        .show();
+            }
         }
 
     }
@@ -483,6 +501,7 @@ public class MainActivity extends AppCompatActivity {
         bd = bd.setScale(places, RoundingMode.HALF_UP);
         return bd.doubleValue();
     }
+
 
 
 
