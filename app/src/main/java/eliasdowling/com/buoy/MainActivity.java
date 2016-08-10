@@ -10,6 +10,7 @@ import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -19,12 +20,11 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.github.aakira.expandablelayout.ExpandableRelativeLayout;
 import com.google.android.gms.maps.model.LatLng;
@@ -45,7 +45,6 @@ import java.util.concurrent.ExecutionException;
 
 import javax.net.ssl.HttpsURLConnection;
 
-//import eliasdowling.com.OpenBuoy.DataActivity;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -63,6 +62,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ProgressDialog dialog = new ProgressDialog(MainActivity.this);
+
 
         //creating navigation drawer
         createNav();
@@ -74,11 +75,6 @@ public class MainActivity extends AppCompatActivity {
         //creates favorites
         getFav();
         favView(map);
-
-        //this will go in sendbuoy
-
-
-
     }
 
     @Override
@@ -94,17 +90,10 @@ public class MainActivity extends AppCompatActivity {
         textView.setText("");
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
 
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                mDrawerLayout.openDrawer(GravityCompat.START);  // OPEN DRAWER
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
+    /**
+     * Sets up search bar
+     */
     private void createAutoTextview(){
         //Adapter to hold dropdown list
         FilterWithSpaceAdapter<String> adapter = new FilterWithSpaceAdapter<>(this,
@@ -113,6 +102,7 @@ public class MainActivity extends AppCompatActivity {
         textView = (AutoCompleteTextView) findViewById(R.id.autoText);
         textView.setAdapter(adapter);
 
+        //listens for enter key click
         textView.setOnKeyListener(new View.OnKeyListener()
         {
             public boolean onKey(View v, int keyCode, KeyEvent event)
@@ -122,6 +112,8 @@ public class MainActivity extends AppCompatActivity {
                     switch (keyCode)
                     {
                         case KeyEvent.KEYCODE_DPAD_CENTER:
+                            sendBuoy(v);
+                            return true;
                         case KeyEvent.KEYCODE_ENTER:
                             sendBuoy(v);
                             return true;
@@ -145,6 +137,24 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Sets click listener for hamburger button
+     * @param item button clicked by user
+     * @return
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                mDrawerLayout.openDrawer(GravityCompat.START);  // OPEN DRAWER
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * Sets up nav drawer
+     */
     private void createNav(){
         final ActionBar ab = getSupportActionBar();
         ab.setHomeAsUpIndicator(R.drawable.ic_menu);
@@ -171,6 +181,29 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Link to ndbc site
+     * @param v
+     */
+    private void ndbc(View v){
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.ndbc.noaa.gov/"));
+        startActivity(browserIntent);
+    }
+
+    /**
+     * Nav drawer items
+     */
+    private void addDrawerItems() {
+        String[] osArray = { "Clear all favorites", "All data from NDBC","Please rate my app!"};
+        ArrayAdapter<String> mAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, osArray);
+        mDrawerList.setAdapter(mAdapter);
+    }
+
+    /**
+     * Creates hashmap in which key = buoy name and value = buoy description
+     * @param buoy array of data with buoy data
+     * @return map
+     */
     private HashMap makeHash(String[] buoy){
         HashMap<String,String> map = new HashMap<>();
         for(int i=0;i<buoy.length;i++){
@@ -179,36 +212,44 @@ public class MainActivity extends AppCompatActivity {
         return map;
     }
 
+    /**
+     * OnClick for map button
+     * @param view
+     */
     public void getMap(View view){
         Intent intent = new Intent(this,MapsActivity.class);
         startActivity(intent);
     }
 
-    /** Called when the user clicks the Enter button */
+    /**
+     * When user presses search button in search
+     * @param view
+     */
     public void sendBuoy(View view) {
         // Do something in response to button
         final Intent myIntent = new Intent(this,DataActivity.class);
 
+        //not a search, not blank, is in hashmap, network is available
         if(textView.getText().toString().length()>4&&!textView.getText().toString().matches("")&&map.containsKey(textView.getText().toString().substring(0,5).toUpperCase())
                 &&isNetworkAvailable(getApplicationContext())){
             myIntent.putExtra(EXTRA_MESSAGE, textView.getText().toString());
             myIntent.putExtra("flag","home");
             startActivity(myIntent);
+        //else just searches whatever is inputted into search bar as long as network is available
         }else if(isNetworkAvailable(getApplicationContext())){
             DataLongOperationAsynchTask rand=null;
-            LatLng latlng = null;
+            LatLng latlng = new LatLng(0,0);
+            //calls geocoder api in background
+            Snackbar.make(view, "Loading...", Snackbar.LENGTH_SHORT)
+                    .show();
+            rand = new DataLongOperationAsynchTask();
             try {
-                rand = new DataLongOperationAsynchTask();
-                rand.execute(textView.getText().toString().replaceAll("\\s",""));
+                rand.execute(textView.getText().toString().replaceAll("\\s", ""));
                 latlng = rand.get();
-            }catch(java.lang.InterruptedException i){
+            }catch(java.lang.InterruptedException|ExecutionException i) {
                 i.printStackTrace();
-            }catch(ExecutionException e){
-                e.printStackTrace();
             }
-
-
-
+            //may return null if search term is invalid
             if(latlng!=null) {
                 String closest = findClosest(latlng.latitude, latlng.longitude);
                 if (closest.equals("No buoy found within 100 miles of given location")) {
@@ -229,6 +270,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Sets up listview that displays favorites
+     * @param map that contains buoy data
+     */
     private void favView(HashMap map){
         //holds favorites in array
         String[] fave = getFav();
@@ -245,16 +290,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-                Snackbar.make(view, "Loading...", Snackbar.LENGTH_SHORT)
-                        .show();
 
                 // ListView Clicked item value
                 String  itemValue    = (String) lister.getItemAtPosition(position);
+                //checking for network
                 if(isNetworkAvailable(getApplicationContext())) {
                     Intent newIntent = new Intent(view.getContext(), DataActivity.class);
                     newIntent.putExtra(EXTRA_MESSAGE, itemValue);
                     newIntent.putExtra("flag","fav");
-
                     startActivity(newIntent);
                 }else{
                     Snackbar.make(view, "Connection unavailable", Snackbar.LENGTH_SHORT)
@@ -264,75 +307,68 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-
+    /**
+     * Gets favorites from shared preferences and puts into array
+     * @return array of favorites
+     */
     private String[] getFav(){
         //to expand favorites into longer list:
         //make for loop that iterates through prefs and adds all to array
         SharedPreferences prefs = getSharedPreferences("Favorites",MODE_PRIVATE);
         Map<String,?> keys = prefs.getAll();
         String[] favs = new String[keys.size()];
+
         int count=0;
+        //iterates through favorites
         for(Map.Entry<String,?> entry : keys.entrySet()){
             String key = entry.getKey();
             Object val = entry.getValue();
             favs[count] = (String)map.get(val);
             count++;
-            Log.d("",key+val);
         }
-
         return favs;
     }
 
+    /**
+     * Just sets up favorites button
+     * @param view
+     */
     public void expandableButton1(View view) {
         if(getFav().length == 0){
             Snackbar.make(textView, "No favorites added. Type in the search bar above or find a buoy on the map to add one", Snackbar.LENGTH_LONG)
                     .show();
+        }else {
+            expandableLayout
+                    = (ExpandableRelativeLayout) findViewById(R.id.expandableLayout1);
+            //expandableLayout.initLayout(true);
+            expandableLayout.toggle(); // toggle expand and collapse
         }
-        expandableLayout
-                = (ExpandableRelativeLayout) findViewById(R.id.expandableLayout1);
-        //expandableLayout.initLayout(true);
-        expandableLayout.toggle(); // toggle expand and collapse
     }
 
     /**
-     * Link to ndbc site
-     * @param v
+     * checks if network is available
+     * @param context
+     * @return boolean if network is available
      */
-    private void ndbc(View v){
-        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.ndbc.noaa.gov/"));
-        startActivity(browserIntent);
-    }
-
-    private void addDrawerItems() {
-        String[] osArray = { "Clear all favorites", "All data from NDBC","Please rate my app!"};
-        ArrayAdapter<String> mAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, osArray);
-        mDrawerList.setAdapter(mAdapter);
-    }
-
     public static boolean isNetworkAvailable(final Context context) {
         final ConnectivityManager connectivityManager = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE));
         return connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected();
     }
 
     //geocoder stuff
+
+    /**
+     * Calling geocoder api in background
+     */
     private class DataLongOperationAsynchTask extends AsyncTask<String, Void, LatLng> {
-        ProgressDialog dialog = new ProgressDialog(MainActivity.this);
-       @Override
-        protected void onPreExecute() {
-           super.onPreExecute();
-           dialog.setMessage("Finding closest buoy to search...");
-           dialog.setCanceledOnTouchOutside(false);
-           dialog.show();
-
-       }
-
         @Override
         protected LatLng doInBackground(String... params) {
             String response = params[0];
             String[] test=new String[5];
             try {
+                //inserts search term in call
                 response = getLatLongByURL("http://maps.google.com/maps/api/geocode/json?address="+response+"&sensor=false");
-                Log.d("response",""+response);
+                //Log.d("response",""+response);
                 test[0]=response;
             } catch (Exception e) {
                 Log.d("error",e.getStackTrace().toString());
@@ -356,8 +392,6 @@ public class MainActivity extends AppCompatActivity {
                             .getDouble("lat");
                     b = new LatLng(lat, lng);
 
-                    Log.d("latitude", "" + lat);
-                    Log.d("longitude", "" + lng);
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -366,11 +400,6 @@ public class MainActivity extends AppCompatActivity {
             return b;
         }
 
-        @Override
-        protected void onPostExecute(LatLng lng){
-            super.onPostExecute(lng);
-            dialog.dismiss();
-        }
     }
 
 
